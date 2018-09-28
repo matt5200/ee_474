@@ -33,8 +33,8 @@ Write a program that will display the letters: A B C D console and flash them
 together at approximately a one-second rate.
 */
 void application_one() {
-    printf("A B C D");
-    delay(10000);
+    printf("A B C D \n");
+    //delay(10000);
 }
 
 /*
