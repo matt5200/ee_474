@@ -14,10 +14,11 @@ void application_five();
 void application_six();
 void application_seven();
 void application_eight();
-void delay();
 
 #include <stdio.h>
-#include<stdlib.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
 int main()
 {
@@ -33,8 +34,10 @@ Write a program that will display the letters: A B C D console and flash them
 together at approximately a one-second rate.
 */
 void application_one() {
+    while(1==1){
+    sleep(1);
     printf("A B C D \n");
-    //delay(10000);
+    }
 }
 
 /*
