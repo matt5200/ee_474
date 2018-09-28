@@ -5,19 +5,25 @@ Now that you have successfully run an existing application on the target platfor
 next exercise will have you write your own program and then make a series of changes to
 it to gain practice in some of the techniques that we will have to use in our more complex
 applications.
-
-Application 1
-Write a program that will display the letters: A B C D console and flash them
-together at approximately a one-second rate.
 */
 
+
 #include <stdio.h>
+
+
 int main()
 {
    // printf() displays the string inside quotation
    printf("Hello, World!\n");
    return 0;
 }
+
+/*
+Application 1
+Write a program that will display the letters: A B C D console and flash them
+together at approximately a one-second rate.
+*/
+
 
 /*
 Application 2
