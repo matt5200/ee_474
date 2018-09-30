@@ -6,7 +6,9 @@
 #include <stdlib.h>
 
 // the main program
-
+// flashes the letters a and c at one-second intervals
+// and b and d at two-second intervals
+// depending on the time
 int main(void) {
     int i;
     int count = 0;

@@ -9,6 +9,7 @@
 
 int main(void) {
     int i;
+    // flashes abcd in about one-second intervals
     for (i = 0; i < 10; i++) {
         printf("abcd\r");
         Sleep(1000);
