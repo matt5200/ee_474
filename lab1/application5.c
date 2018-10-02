@@ -33,7 +33,23 @@ int main(void) {
     int h;
     int count = 0;
     // displays the correct sequence depending on the time elapsed
-    for (h = 0; h < 10; h++) {
+    for (h = 0; h < 300; h++) {
+        if (h % one == 0 && h % two == 0) {
+            printf("aaaaaaaaaaaaaaaaaaaaa");
+            system("cls");
+        } else if (h % one == 0 && h % two != 0) {
+            printf(" B D\r");
+            system("cls");
+        } else if (h % one != 0 && h % two == 0) {
+            printf("A C\r");
+            system("cls");
+        } else {
+            printf("ABCD\r");
+            system("cls");
+        }
+    }
+
+ /*   for (h = 0; h < 10; h++) {
         count++;
         if (count == 1) {
             printf("abcd\r");
@@ -67,6 +83,6 @@ int main(void) {
             system("cls");
             count = 0;
         }
-    }
+    }*/
 	return 0;
 }

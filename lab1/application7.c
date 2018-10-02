@@ -5,14 +5,33 @@
 #include <windows.h>
 #include <stdlib.h>
 
-// first delay loop
-void f1Data(unsigned long delay1, unsigned long delay2) {
-    int i;
-    int j;
-    for (i = 0; i < delay1; i++) {
-        for (j = 0; j < delay2; j++) {
-            {}
+// delays the letters a certain amount of time
+// depending on user input
+void delay(int e, int two, int one, int f, boolean t2, boolean t1, int cycle) {
+    long int c;
+    if (cycle < 2) {
+        for (c = 1; c <= one*100; c++) {
+            e++;
+            if (cycle == 0) {
+                if (e == two*100) {
+                    e = 0;
+                    f = 0;
+                    t2 = !t2;
+                    system("cls");
+                    if (t1 == 1 && t2 ==1) {
+                        // remove whatever is on screen and put on correct text
+                        printf("ABCD\r");
+                    } else if (t1 == 0 && t2 == 1) {
+                        printf(" B D\r");
+                    } else if (t1 == 1 && t2 == 0) {
+                        printf("A C\r");
+                    } else {
+                        system("cls");
+                    }
+                }
+            }
         }
+        cycle++;
     }
 }
 
@@ -25,36 +44,40 @@ int main(void) {
 	printf("Please enter a second delay value \n");  // get user input for delay value
 	int two = scanf("%d", &two);
 
-    int h;
+   // int h;
+   // int i;
+   // int j;
+    int e = 0;
+    int f = 0;
     int count = 0;
+    // When t1 is true, then AB should be printed
+    boolean t1 = 1;
+    // When t2 is true, the CD should be printed
+    // when both are true, then both should be printed
+    boolean t2 = 1;
     // displays the correct sequence depending on the time elapsed
-    for (h = 0; h < 10; h++) {
-        count++;
-        if (count == 1) {
-            printf("abcd\r");
-            f1Data(one, two);
+    while (1==1) {
+
+    // Four possible prints
+    // A B
+    // C D
+    // ABCD
+
+        printf("ABCD\r");
+        // after the following code has executed
+        // the A B letters must change state
+        delay(e, two, one, f, t2, t1, 0);
+        t1 = !t1;
+        system("cls");
+        if (t1 == 1 && t2 ==1) {
+            // remove whatever is on screen and put on correct text
+            printf("ABCD\r");
+        } else if (t1 == 0 && t2 == 1) {
+            printf(" B D\r");
+        } else if (t1 == 1 && t2 == 0) {
+            printf("A C\r");
+        } else {
             system("cls");
-        } else if (count == 2) {
-            printf(" b d\r");
-            f1Data(one, two);
-            system("cls");
-        } else if (count == 3) {
-            printf("a c\r");
-            f1Data(one, two);
-            system("cls");
-        } else if (count == 4) {
-            printf(" b d\r");
-            f1Data(one, two);
-            system("cls");
-        } else if (count == 5) {
-            printf("abcd\r");
-            f1Data(one, two);
-            system("cls");
-        } else if (count == 6) {
-            printf("");
-            f1Data(one, two);
-            system("cls");
-            count = 0;
         }
     }
 	return 0;

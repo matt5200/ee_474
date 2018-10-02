@@ -49,10 +49,10 @@ int main(void) {
             printf("ABCD\r");
         }
         else if (t1 == 0 && t2 == 1) {
-            printf("  CD\r");
+            printf(" B D\r");
         }
         else if (t1 == 1 && t2 == 0) {
-            printf("AB\r");
+            printf("A C\r");
         }
         else {
             system("cls");
@@ -68,10 +68,10 @@ int main(void) {
         printf("ABCD\r");
         }
         else if (t1 == 0 && t2 == 1) {
-            printf("  CD\r");
+            printf(" B D\r");
         }
         else if (t1 == 1 && t2 == 0) {
-            printf("AB\r");
+            printf("A C\r");
         }
         else {
             system("cls");
