@@ -32,6 +32,7 @@ void delay(int e, int two, int one, int f, boolean t2, boolean t1, int cycle) {
             }
         }
         cycle++;
+        delay(e, two, one, f, t2, t1, cycle);
     }
 }
 
