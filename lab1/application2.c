@@ -2,29 +2,29 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <windows.h>
+//#include <windows.h>
 #include <stdlib.h>
 
 // the main program
 
 int main(void) {
     printf("a");
-    Sleep(1000);
+    sleep(1);
     printf("b");
-    Sleep(1000);
+    sleep(1);
     printf("c");
-    Sleep(1000);
+    sleep(1);
     printf("d");
-    Sleep(1000);
-    system("cls");
+    sleep(1);
+    system("clear");
     printf("abc");
-    Sleep(1000);
-    system("cls");
+    sleep(1);
+    system("clear");
     printf("ab");
-    Sleep(1000);
-    system("cls");
+    sleep(1);
+    system("clear");
     printf("a");
-    Sleep(1000);
-    system("cls");
+    sleep(1);
+    system("clear");
 	return 0;
 }
