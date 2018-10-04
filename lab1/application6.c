@@ -4,15 +4,19 @@
 #include <unistd.h>
 #include <windows.h>
 #include <stdlib.h>
-#include <stdbool.h>
+
 // the main program
 
 int main(void) {
 
     printf("Please enter a delay value \n");  // get user input for delay value
-	int one = scanf("%d", &one);
+	int onee;
+	int* one = &onee;
+	*one = scanf("%d", &onee);  // used for referencing
 	printf("Please enter a second delay value \n");  // get user input for delay value
-	int two = scanf("%d", &two);
+	int twoo;
+	int* two = &twoo;
+	*two = scanf("%d", &twoo);  // used for referencing
 
     int h;
     int i;
@@ -21,10 +25,10 @@ int main(void) {
     int f = 0;
     int count = 0;
     // When t1 is true, then AB should be printed
-    bool t1 = 1;
+    boolean t1 = 1;
     // When t2 is true, the CD should be printed
     // when both are true, then both should be printed
-    bool t2 = 1;
+    boolean t2 = 1;
     // displays the correct sequence depending on the time elapsed
     while (1==1) {
 
@@ -36,10 +40,11 @@ int main(void) {
     printf("ABCD\r");
     // after the following code has executed, one t1 half period has passed
     // and the A B letters must change state
-    for (long int c = 1; c <= one*100; c++) {
+    long int c;
+    for (c = 1; c <= *one*100; c++) {
         // if e has counted to two, then t2 must change state
         e++;
-        if (e == two*100) {
+        if (e == *two*100) {
             e = 0;
             f = 0;
             t2 = !t2;
@@ -58,7 +63,8 @@ int main(void) {
             system("cls");
         }
         }
-       for (long int d = 1; d <= one*100; d++) {
+        long int d;
+       for (d = 1; d <= *one*100; d++) {
         f++;
        }}
        t1 = !t1;

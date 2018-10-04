@@ -6,7 +6,9 @@
 #include <stdlib.h>
 
 // the main program
-
+// prints a then b then c then d and then erases them to
+// display abc then ab then a then nothing in about one
+// second intervals
 int main(void) {
     printf("a");
     sleep(1);
