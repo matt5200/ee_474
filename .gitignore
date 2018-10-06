@@ -1,3 +1,9 @@
 clint.py
 a.out
-
+*.o
+*.exe
+app4.ino
+app6.ino
+app7.ino	
+app8.ino
+*.exe
