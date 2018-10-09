@@ -7,6 +7,7 @@ void loop() {
   // put your main code here, to run repeatedly:
 
 }
+
 /*
  Status and Annunciation Subsystem Requirements
 The status, annunciation, and warning management portion of the system must
@@ -23,3 +24,29 @@ Displayed information comprises three major categories: status, annunciation, an
 alarm. Such information is to be presented on a Display Console.
  
  */
+
+int status () {
+
+}
+
+enum myBool { 
+  FALSE = 0, TRUE = 1 
+  };
+ typedef enum _myBool Bool;
+
+typedef struct consoleDisplayData{ 
+  bool fuel_low;
+  bool battery_low;
+  bool solar_panel_state;
+  int battery_level;
+  int fuel_level;
+  int power_consumptionl
+  int power_generationl
+} consoleDisplayData;
+
+typedef struct warningAlarmData{ 
+  bool fuel_low;
+  bool battery_low;
+  int battery_level;
+  int fuel_level;
+} warningAlarmData;

@@ -7,3 +7,14 @@ app6.ino
 app7.ino	
 app8.ino
 *.exe
+lab2/StatusDisplay/Elegoo_GFX.cpp
+lab2/StatusDisplay/Elegoo_GFX.h
+lab2/StatusDisplay/Elegoo_TFTLCD.cpp
+lab2/StatusDisplay/Elegoo_TFTLCD.h
+lab2/StatusDisplay/TouchScreen.cpp
+lab2/StatusDisplay/TouchScreen.h
+
+
+
+
+
