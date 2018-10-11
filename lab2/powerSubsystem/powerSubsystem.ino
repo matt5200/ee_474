@@ -7,16 +7,21 @@ typedef struct powerSubsystemData {
   unsigned short* powerGeneration;
 } powerSubsystemData;
 
-void powerSubsystem(powerSubsystemData* power) {
+///// FIX POWER CONSUMPTION
+void powerSubsystem(powerSubsystemData* power, int* cycle, bool* reverse) {
   // powerConsumption
-  if (power->powerConsumption < 11) {
-    if (power->powerConsumption % 2 == 0) {
+  if (power->powerConsumption < 11 && reverse == 0) {
+    if (cycle % 2 == 0) {
       power->powerConsumption = power->powerConsumption + 2;
     } else {
       power->powerConsumption = power->powerConsumption - 1;
     }
-  } else........ {
-    
+  } else if (power->powerConsumption 
+    if (cycle % 2 == 1) {
+      power->powerConsumption = power->powerConsumption + 2;
+    } else {
+      power->powerConsumption = power->powerConsumption - 1;
+    }
   }
 
   // powerGeneration
@@ -24,7 +29,15 @@ void powerSubsystem(powerSubsystemData* power) {
     if (powerSubsystemData->batteryLevel > 95) {
       powerSubsystemData->SolarPanelState = FALSE;
     } else {
-      // UM WAT 
+      if (powerSubsystemData->batteryLevel < 96) {
+        if (cycle % 2 == 0) {
+          powerSubsystemData->powerGeneration = powerSubsystemData->powerGeneration + 2;
+        } else {
+          if (powerSubsystemData->batteryLevel < 51) {
+            powerSubsystemData->powerGeneration = powerSubsystemData->powerGeneration + 1;
+          }
+        }
+      }
     }
   } else {
     if (powerSubsystemData->batteryLevel <= 10) {
