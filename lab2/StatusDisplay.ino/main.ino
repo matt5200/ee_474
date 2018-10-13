@@ -1,5 +1,5 @@
 
-//#include <TFT.h>
+#include <TFT.h>
 #include <SPI.h>
 #include <Elegoo_GFX.h>    // Core graphics library
 #include <Elegoo_TFTLCD.h> // Hardware-specific library
@@ -19,58 +19,63 @@
 #define ORANGE  0xFFA5
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
+unsigned short batteryLevel;
+unsigned short thrusterCommand;
+unsigned short fuelLevel;
+unsigned short powerConsumption;
+unsigned short powerGeneration;
+unsigned short motorDrive;
+bool solarPanelState;
+bool fuelLow;
+bool batteryLow;
+
+typedef struct powerSubsystemData {
+
+  bool* solarPanelState;
+
+  unsigned short* batteryLevel;
+
+  unsigned short* powerConsumption;
+
+  unsigned short* powerGeneration;
+
+} powerSubsystemData;
+
 
 typedef struct consoleDisplayData{ 
+  int  *batteryLevel;
+  unsigned short *fuelLevel;
+  unsigned short *powerConsumption;
+  unsigned short *powerGeneration;
   bool *fuelLow;
   bool *batteryLow;
   bool *solarPanelState;
-  int  *batteryLevel;
-  int *fuelLevel;
-  unsigned short *powerConsumption;
-  unsigned short *powerGeneration;
 } consoleDisplayData;
 
-unsigned int thrusterCommand = 0;
-int batteryLevel =  5;
-int fuelLevel = 5;
-short unsigned powerConsumption = 0;
-short unsigned powerGeneration = 0;
-short unsigned motorDrive = 0;
-bool solarPanelState = false;
-bool fuelLow = false;
-bool batteryLow = false;
-
-
 typedef struct warningAlarmData{ 
+  int *batteryLevel;
+  unsigned short *fuelLevel;
   bool *fuelLow;
   bool *batteryLow;
-  int *batteryLevel;
-  int *fuelLevel;
 } warningAlarmData;
+
 
 consoleDisplayData *cd;
 warningAlarmData *wd;
-
-
-/*
-  cd->fuelLow = &fuelLow;
-  cd->batteryLow = &batteryLow;
-  cd->solarPanelState = &solarPanelState;
-  cd->batteryLevel = &batteryLevel;  
-  cd->fuelLevel = &fuelLevel;
-  cd->powerConsumption = &powerConsumption;
-  cd->powerGeneration = &powerGeneration;
-*/
 
 void ConsoleDisplay(void *consoleDisplayData);
 void initializeData(consoleDisplayData *ptr);
 void initializeData2( warningAlarmData *ptr);
 void WarningAlarm (void* warn);
 void ClearLine(int y_coord);
+void powerSubsystem(void* p, int* cycle, bool* reverse);
 
-bool batt_flash = true;
-bool fuel_flash = true;
-bool fuel_flash_two = true;
+bool batt_flash;
+bool fuel_flash;
+bool fuel_flash_two;
+
+
+
 
 void ClearLine(int y_coord) {
   for (int x = 0; x < 80; x++) {
@@ -79,6 +84,92 @@ void ClearLine(int y_coord) {
     }
   }
 }
+
+
+void powerSubsystem(void* p, int* cycle, bool* reverse) {
+
+  powerSubsystemData* power = (powerSubsystemData*) p;
+
+  // powerConsumption
+  if (*power->powerConsumption > 10) {
+    *reverse = 1;
+  } else if (*power->powerConsumption < 5) {
+    *reverse = 0;
+  }
+  if (*reverse == 0) {
+    if (*cycle % 2 == 0) {
+      if (*power->powerConsumption + 2 <= 100) {
+        *power->powerConsumption = *power->powerConsumption + 2;
+      } else if (*power->powerConsumption + 1 == 100) {
+        *power->powerConsumption = 100;
+      }
+    } else {
+      if (power->powerConsumption - 1 >= 0) {
+        *power->powerConsumption = *power->powerConsumption - 1;
+      }
+    }
+  } else {
+    if (*cycle % 2 == 1) {
+      if (*power->powerConsumption + 2 <= 100) {
+        *power->powerConsumption = *power->powerConsumption + 2;
+      } else if (*power->powerConsumption + 1 == 100) {
+        *power->powerConsumption = 100;
+      }
+    } else {
+      if (power->powerConsumption - 1 >= 0) {
+        *power->powerConsumption = *power->powerConsumption - 1;
+      }
+    }
+  }
+  // powerGeneration
+
+  if (*power->solarPanelState == true) {
+    if (*power->batteryLevel > 95) {
+      *power->solarPanelState = false;
+    } else {
+      if (*power->batteryLevel < 96) {
+        if (*cycle % 2 == 0) {
+          if (*power->powerConsumption + 2 <= 100) {
+            *power->powerGeneration = *power->powerGeneration + 2;
+          } else if (*power->powerConsumption + 1 == 100) {
+            *power->powerConsumption = 100;
+          }
+        } else {
+          if (*power->batteryLevel < 51) {
+            if (*power->powerConsumption + 1 <= 100) {
+              *power->powerGeneration = *power->powerGeneration + 1;
+            }
+          }
+        }
+      }
+    }
+  } else {
+    if (*power->batteryLevel <= 10) {
+      *power->solarPanelState = true;
+    }
+  }
+
+  // batteryLevel
+  if (*power->solarPanelState == false) {
+    if (*power->batteryLevel - (3 * *power->powerConsumption) >= 0) {
+      *power->batteryLevel = *power->batteryLevel - (3 * *power->powerConsumption);
+    } else {
+      *power->batteryLevel = 0;
+    }
+  } else {
+    if (*power->batteryLevel - *power->powerConsumption + *power->powerGeneration < 0) {
+      *power->batteryLevel = 0;
+    } else if (*power->batteryLevel - *power->powerConsumption + *power->powerGeneration > 100) {
+      *power->batteryLevel = 100;
+    } else {
+      *power->batteryLevel = *power->batteryLevel - *power->powerConsumption + *power->powerGeneration;
+    } 
+  }
+}
+
+
+
+
 
 void WarningAlarm (void *warn) {
   
@@ -237,20 +328,94 @@ void setup() {
   }
   tft.begin(identifier);
   tft.fillScreen(BLACK);
+  thrusterCommand = 0;
+  batteryLevel =  2;
+  fuelLevel = 3;
+  powerConsumption = 0;
+  powerGeneration = 0;
+  motorDrive = 0;
+  solarPanelState = false;
+  fuelLow = false;
+  fuelLow = false;
+  batteryLow = false;
+
+  batt_flash = true;
+  fuel_flash = true;
+  fuel_flash_two = true;
+
+  wd->batteryLow = &batteryLow; 
+  wd->fuelLevel = &fuelLevel;
+
+  
+  cd->fuelLow = &fuelLow;
+  cd->batteryLow = &batteryLow;
+  cd->solarPanelState = &solarPanelState;
+  cd->batteryLevel = &batteryLevel;  
+  cd->fuelLevel = &fuelLevel;
+  cd->powerConsumption = &powerConsumption;
+  cd->powerGeneration = &powerGeneration;
+
+  wd->batteryLevel = &batteryLevel;
   wd->fuelLow = &fuelLow;
-  *wd->batteryLow = batteryLow; 
-  *wd->batteryLevel = batteryLevel;
-  *wd->fuelLevel = fuelLevel;
 }
   
 
 void loop()
 {
-  
-  WarningAlarm (wd);
-  fuelLevel--;
-  Serial.println("first");
+
+  Serial.println("ORIG");
+  Serial.println("thrusterCommand");
+  Serial.println(thrusterCommand);
+  Serial.println("batteryLevel");
+  Serial.println(batteryLevel);
+  Serial.println("fuelLevel");
   Serial.println(fuelLevel);
-  Serial.println("second");
+  Serial.println("powerConsumption");
+  Serial.println(powerConsumption);
+  Serial.println("powerGeneration");
+  Serial.println(powerGeneration);
+  Serial.println("motorDrive");
+  Serial.println(motorDrive);
+  Serial.println("solarPanelState");
+  Serial.println(solarPanelState);
+  Serial.println("fuelLow");
+  Serial.println(fuelLow);
+  Serial.println("batteryLow");
+  Serial.println(batteryLow);
+
+    thrusterCommand+=1;
+  fuelLevel+=1;
+  powerConsumption+=1;
+  powerGeneration+=1;
+  motorDrive+=1;
+  solarPanelState = true;
+  batteryLow = true;
+ 
+  Serial.println("WD VALS");
+  Serial.println("fuelLow");
+  Serial.println(*wd->fuelLow);
+  Serial.println("batteryLow");
+  Serial.println(*wd->batteryLow);
+  Serial.println("batteryLevel");
+  Serial.println(*wd->batteryLevel);
+  Serial.println("fuelLevel");
   Serial.println(*wd->fuelLevel);
+ 
+  Serial.println("CD VALS");
+  Serial.println("fuelLow");
+  Serial.println(*cd->fuelLow);
+  Serial.println("batteryLow");
+  Serial.println(*cd->batteryLow);
+  Serial.println("solarPanelState");
+  Serial.println(*cd->solarPanelState);
+   Serial.println("batteryLevel");
+  Serial.println(*cd->batteryLevel);
+   Serial.println("fuelLevel");
+  Serial.println(*cd->fuelLevel);
+   Serial.println("powerConsumption");
+  Serial.println(*cd->powerConsumption);
+   Serial.println("powerGeneration");
+  Serial.println(*cd->powerGeneration);
+
+  delay(10000);
 }
