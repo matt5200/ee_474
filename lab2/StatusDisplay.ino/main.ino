@@ -30,15 +30,10 @@ bool fuelLow;
 bool batteryLow;
 
 typedef struct powerSubsystemData {
-
   bool* solarPanelState;
-
   unsigned short* batteryLevel;
-
   unsigned short* powerConsumption;
-
   unsigned short* powerGeneration;
-
 } powerSubsystemData;
 
 

@@ -18,7 +18,7 @@ void satelliteComs(void* s) {
   unsigned short down = 0;
 
   int i = randomInteger(0, 65535);
-  *thrusterCommand = i;
+  *satelliteComs->thrusterCommand = i;
   
   // convert decimal to binary
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

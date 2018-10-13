@@ -5,9 +5,9 @@ typedef struct powerSubsystemData {
   unsigned short* powerGeneration;
 } powerSubsystemData;
 
-void powerSubsystem(void* p, int* cycle, bool* reverse);
+void powerSubsystem(void* p, int* cycle, int* reverse);
 
-void powerSubsystem(void* p, int* cycle, bool* reverse) {
+void powerSubsystem(void* p, int* cycle, int* reverse) {
   powerSubsystemData* power = (powerSubsystemData*) p;
   // powerConsumption
   if (*power->powerConsumption > 10) {
