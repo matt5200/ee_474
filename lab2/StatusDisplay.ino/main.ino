@@ -39,14 +39,14 @@ typedef struct warningAlarmData{
 
 
 void ConsoleDisplay(void *consoleDisplayData);
-void statusDisplay(consoleDisplayData *ptr);
 void initializeData(consoleDisplayData *ptr);
-void WarningAlarm (void* warn);
 void initializeData2( warningAlarmData *ptr);
+void WarningAlarm (void* warn);
 void ClearLine(int y_coord);
 
 consoleDisplayData *cd;
 warningAlarmData *wd;
+
 
 void initializeData2( warningAlarmData *ptr) {
 (*ptr).fuelLow = false;
@@ -155,40 +155,40 @@ void WarningAlarm (void *warn) {
   delay(1000);
 }
 
-void ConsoleDisplay(consoleDisplayData *ptr) 
+void ConsoleDisplay(void *ptr) 
 {
-    if (Sat_status) {
+    consoleDisplayData *data= (consoleDisplayData *) ptr;
     tft.setCursor(0, 0);
-    Serial.println.print("Panel State :");
-    Serial.println.print(ptr->solarPanelState);
-    Serial.println.print("\n");
-    Serial.println.print("Battery Level :");
-    Serial.println.print(ptr->batteryLow);
-    Serial.println.print("\n");
-    Serial.println.print("Fuel Low Status :");
-    tft.print(ptr->fuelLow);
-    Serial.println.print("\n");
-    Serial.println.print("Power Consumption :");
-    Serial.println.print(ptr->powerConsumption);
-    Serial.println.print("\n");
-    }
-    else {
-    Serial.println.print("Battery Level :");
-    Serial.println.print(ptr->batteryLevel);
-    Serial.println.print("\n");
+    Serial.println("Panel State :");
+    Serial.println(data->solarPanelState);
+    Serial.println("\n");
+    Serial.println("Battery Level :");
+    Serial.println(data->batteryLow);
+    Serial.println("\n");
+    Serial.println("Fuel Low Status :");
+    tft.print(data->fuelLow);
+    Serial.println("\n");
+    Serial.println("Power Consumption :");
+    Serial.println(data->powerConsumption);
+    Serial.println("\n");
+
+
+    Serial.println("Battery Level :");
+    Serial.println(data->batteryLevel);
+    Serial.println("\n");
     delay(100);
-    Serial.println.print("Fuel Level :");
-    Serial.println.print(ptr->fuelLevel);
-    Serial.println.print("\n");
+    Serial.println("Fuel Level :");
+    Serial.println(data->fuelLevel);
+    Serial.println("\n");
     delay(100);
-    Serial.println.print("Power Consumption :");
-    Serial.println.print(ptr->powerConsumption);
-    Serial.println.print("\n");
+    Serial.println("Power Consumption :");
+    Serial.println(data->powerConsumption);
+    Serial.println("\n");
     delay(100);
-    Serial.println.print("Power Generation :");
-    Serial.println.print(ptr->powerGeneration);
-    Serial.println.print("\n");
-    }
+    Serial.println("Power Generation :");
+    Serial.println(data->powerGeneration);
+    Serial.println("\n");
+
 }
 
 void setup() {
