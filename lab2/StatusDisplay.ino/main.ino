@@ -20,8 +20,6 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
 
-
-
 unsigned short batteryLevel;
 unsigned short thrusterCommand;
 unsigned short fuelLevel;
@@ -31,6 +29,32 @@ unsigned short motorDrive;
 bool solarPanelState;
 bool fuelLow;
 bool batteryLow;
+
+
+typedef struct powerSubsystemData {
+  bool* solarPanelState;
+  unsigned short* batteryLevel;
+  unsigned short* powerConsumption;
+  unsigned short* powerGeneration;
+} powerSubsystemData;
+
+
+typedef struct consoleDisplayData{ 
+  int  *batteryLevel;
+  unsigned short *fuelLevel;
+  unsigned short *powerConsumption;
+  unsigned short *powerGeneration;
+  bool *fuelLow;
+  bool *batteryLow;
+  bool *solarPanelState;
+} consoleDisplayData;
+
+typedef struct warningAlarmData{ 
+  int *batteryLevel;
+  unsigned short *fuelLevel;
+  bool *fuelLow;
+  bool *batteryLow;
+} warningAlarmData;
 
 
 consoleDisplayData *cd;
