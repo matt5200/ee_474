@@ -17,15 +17,27 @@ void powerSubsystem(void* p, int* cycle, bool* reverse) {
   }
   if (*reverse == 0) {
     if (*cycle % 2 == 0) {
-      *power->powerConsumption = *power->powerConsumption + 2;
+      if (*power->powerConsumption + 2 <= 100) {
+        *power->powerConsumption = *power->powerConsumption + 2;
+      } else if (*power->powerConsumption + 1 == 100) {
+        *power->powerConsumption = 100;
+      }
     } else {
-      *power->powerConsumption = *power->powerConsumption - 1;
+      if (power->powerConsumption - 1 >= 0) {
+        *power->powerConsumption = *power->powerConsumption - 1;
+      }
     }
   } else {
     if (*cycle % 2 == 1) {
-      *power->powerConsumption = *power->powerConsumption + 2;
+      if (*power->powerConsumption + 2 <= 100) {
+        *power->powerConsumption = *power->powerConsumption + 2;
+      } else if (*power->powerConsumption + 1 == 100) {
+        *power->powerConsumption = 100;
+      }
     } else {
-      *power->powerConsumption = *power->powerConsumption - 1;
+      if (power->powerConsumption - 1 >= 0) {
+        *power->powerConsumption = *power->powerConsumption - 1;
+      }
     }
   }
 
@@ -36,10 +48,16 @@ void powerSubsystem(void* p, int* cycle, bool* reverse) {
     } else {
       if (*power->batteryLevel < 96) {
         if (*cycle % 2 == 0) {
-          *power->powerGeneration = *power->powerGeneration + 2;
+          if (*power->powerConsumption + 2 <= 100) {
+            *power->powerGeneration = *power->powerGeneration + 2;
+          } else if (*power->powerConsumption + 1 == 100) {
+            *power->powerConsumption = 100;
+          }
         } else {
           if (*power->batteryLevel < 51) {
-            *power->powerGeneration = *power->powerGeneration + 1;
+            if (*power->powerConsumption + 1 <= 100) {
+              *power->powerGeneration = *power->powerGeneration + 1;
+            }
           }
         }
       }
@@ -52,8 +70,18 @@ void powerSubsystem(void* p, int* cycle, bool* reverse) {
 
   // batteryLevel
   if (*power->solarPanelState == false) {
-    *power->batteryLevel = *power->batteryLevel - (3 * *power->powerConsumption); 
+    if (*power->batteryLevel - (3 * *power->powerConsumption) >= 0) {
+      *power->batteryLevel = *power->batteryLevel - (3 * *power->powerConsumption);
+    } else {
+      *power->batteryLevel = 0;
+    }
   } else {
-    *power->batteryLevel = *power->batteryLevel - *power->powerConsumption + *power->powerGeneration; 
+    if (*power->batteryLevel - *power->powerConsumption + *power->powerGeneration < 0) {
+      *power->batteryLevel = 0;
+    } else if (*power->batteryLevel - *power->powerConsumption + *power->powerGeneration > 100) {
+      *power->batteryLevel = 100;
+    } else {
+      *power->batteryLevel = *power->batteryLevel - *power->powerConsumption + *power->powerGeneration;
+    } 
   }
 }
