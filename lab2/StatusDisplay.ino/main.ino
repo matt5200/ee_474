@@ -1,5 +1,5 @@
 
-#include <TFT.h>
+//#include <TFT.h>
 #include <SPI.h>
 #include <Elegoo_GFX.h>    // Core graphics library
 #include <Elegoo_TFTLCD.h> // Hardware-specific library
@@ -16,6 +16,7 @@
 #define MAGENTA 0xF81F
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
+#define ORANGE  0xFFA5
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
 
@@ -37,6 +38,7 @@ typedef struct warningAlarmData{
 } warningAlarmData;
 
 
+void ConsoleDisplay(void *consoleDisplayData);
 void statusDisplay(consoleDisplayData *ptr);
 void initializeData(consoleDisplayData *ptr);
 void WarningAlarm (void* warn);
@@ -49,8 +51,8 @@ warningAlarmData *wd;
 void initializeData2( warningAlarmData *ptr) {
 (*ptr).fuelLow = false;
 (*ptr).batteryLow = false;
-(*ptr).batteryLevel = 9;
-(*ptr).fuelLevel = 100;
+(*ptr).batteryLevel = 4;
+(*ptr).fuelLevel = 4;
 }
 
 void initializeData(consoleDisplayData *ptr) {
@@ -65,6 +67,7 @@ void initializeData(consoleDisplayData *ptr) {
 
 bool batt_flash = true;
 bool fuel_flash = true;
+bool fuel_flash_two = true;
 
 void ClearLine(int y_coord) {
   for (int x = 0; x < 80; x++) {
@@ -78,58 +81,67 @@ void WarningAlarm (void *warn) {
   
   warningAlarmData *data = (warningAlarmData *) warn;
   tft.setCursor(0, 0);
+  tft.setTextColor(WHITE); 
   tft.print("SATELITE STATUS");
-  while(1==1) {
   
-    if ( data->fuelLevel > 50) {
-    tft.setCursor(0, 15);
+   tft.setCursor(0, 15);
+   if ( data->fuelLevel > 50) {
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
    else if (data->fuelLevel <= 50 && data->fuelLevel > 10) {
-    tft.setCursor(0, 15);
     if (fuel_flash == true) {
+      if (fuel_flash_two == true) {
       ClearLine(15);
       fuel_flash = false;
+      fuel_flash_two = false;
     }
     else {
-    fuel_flash = true;
-    tft.setTextColor(YELLOW);
-    tft.print("FUEL\n");
+      fuel_flash_two = true;
+      }
+    }
+    else {
+      fuel_flash = true;
+      tft.setTextColor(ORANGE);
+      tft.print("FUEL\n");
     }
    }
    else {
-    tft.setCursor(0, 15);
-      if (fuel_flash == true) {
+          if (fuel_flash == true) {
+      if (fuel_flash_two == true) {
       ClearLine(15);
       fuel_flash = false;
+      fuel_flash_two = false;
+    }
+    else {
+      fuel_flash_two = true;
       }
-      else {
+    }
+    else {
       fuel_flash = true;
       tft.setTextColor(RED);
       tft.print("FUEL\n");
-      }
+    }
    }
-   if (data->batteryLevel > 50) {
+
     tft.setCursor(0, 30);
+   if (data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
     batt_flash = true;
     }
    else if (data->batteryLevel <= 50 && data->batteryLevel > 10) {
-    tft.setCursor(0, 30);
     if (batt_flash == true) {
       ClearLine(30);
       batt_flash = false; 
     }
     else {
     batt_flash = true; 
-    tft.setTextColor(YELLOW); ;
+    tft.setTextColor(ORANGE); ;
     tft.print("BATTERY\n");
     }
   }
   else {
-  tft.setCursor(0, 30);
    if (batt_flash == true) {
       ClearLine(30);
       batt_flash = false;
@@ -139,46 +151,44 @@ void WarningAlarm (void *warn) {
     tft.setTextColor(RED); 
     tft.print("BATTERY\n");
     }
-  }
-   
-   
- delay(1000);
  }
+  delay(1000);
 }
 
-void statusDisplay(consoleDisplayData *ptr) 
+void ConsoleDisplay(consoleDisplayData *ptr) 
 {
-    tft.fillScreen(BLACK);
-    unsigned long start = micros();
+    if (Sat_status) {
     tft.setCursor(0, 0);
-    tft.setTextColor(GREEN); tft.setTextSize(1.5);
-    tft.print("Fuel Low Status :");
+    Serial.println.print("Panel State :");
+    Serial.println.print(ptr->solarPanelState);
+    Serial.println.print("\n");
+    Serial.println.print("Battery Level :");
+    Serial.println.print(ptr->batteryLow);
+    Serial.println.print("\n");
+    Serial.println.print("Fuel Low Status :");
     tft.print(ptr->fuelLow);
-    tft.print("\n");
+    Serial.println.print("\n");
+    Serial.println.print("Power Consumption :");
+    Serial.println.print(ptr->powerConsumption);
+    Serial.println.print("\n");
+    }
+    else {
+    Serial.println.print("Battery Level :");
+    Serial.println.print(ptr->batteryLevel);
+    Serial.println.print("\n");
     delay(100);
-    tft.print("Battery Level :");
-    tft.print(ptr->batteryLow);
-    tft.print("\n");
+    Serial.println.print("Fuel Level :");
+    Serial.println.print(ptr->fuelLevel);
+    Serial.println.print("\n");
     delay(100);
-     tft.print("Panel State :");
-    tft.print(ptr->solarPanelState);
-    tft.print("\n");
+    Serial.println.print("Power Consumption :");
+    Serial.println.print(ptr->powerConsumption);
+    Serial.println.print("\n");
     delay(100);
-    tft.print("Battery Level :");
-    tft.print(ptr->batteryLevel);
-    tft.print("\n");
-    delay(100);
-    tft.print("Fuel Level :");
-    tft.print(ptr->fuelLevel);
-    tft.print("\n");
-    delay(100);
-    tft.print("Power Consumption :");
-    tft.print(ptr->powerConsumption);
-    tft.print("\n");
-    delay(100);
-    tft.print("Power Generation :");
-    tft.print(ptr->powerGeneration);
-    tft.print("\n");
+    Serial.println.print("Power Generation :");
+    Serial.println.print(ptr->powerGeneration);
+    Serial.println.print("\n");
+    }
 }
 
 void setup() {
@@ -236,12 +246,14 @@ void setup() {
   tft.fillScreen(BLACK);
   initializeData(cd);
   initializeData2(wd);
-   WarningAlarm(wd);
 }
 
 void loop()
 {
-  //statusDisplay(cd);
-  delay(10);
+    WarningAlarm(wd);
+    wd->fuelLevel++;
+    wd->batteryLevel++;
+  Serial.println(wd->fuelLevel);
+  Serial.println(wd->batteryLevel);
+  delay(200);
 }
-
