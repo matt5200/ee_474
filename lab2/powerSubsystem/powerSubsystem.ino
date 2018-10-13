@@ -7,16 +7,20 @@ typedef struct powerSubsystemData {
   unsigned short* powerGeneration;
 } powerSubsystemData;
 
-///// FIX POWER CONSUMPTION
 void powerSubsystem(powerSubsystemData* power, int* cycle, bool* reverse) {
   // powerConsumption
-  if (power->powerConsumption < 11 && reverse == 0) {
+  if power->powerConsumption > 10) {
+    reverse = 1;
+  } else if (power->powerConsumption < 5) {
+    reverse = 0;
+  }
+  if (reverse == 0) {
     if (cycle % 2 == 0) {
       power->powerConsumption = power->powerConsumption + 2;
     } else {
       power->powerConsumption = power->powerConsumption - 1;
     }
-  } else if (power->powerConsumption 
+  } else {
     if (cycle % 2 == 1) {
       power->powerConsumption = power->powerConsumption + 2;
     } else {
