@@ -1,5 +1,3 @@
-#include "boolean.ino"
-
 typedef struct powerSubsystemData {
   bool* solarPanelState;
   unsigned short* batteryLevel;
