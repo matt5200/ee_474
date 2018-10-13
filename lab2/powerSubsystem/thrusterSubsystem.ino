@@ -3,6 +3,8 @@ typedef struct thrusterSubsystemData {
   unsigned short* fuelLevel;
 } thrusterSubsystemData;
 
-//void thrusterSubsystem (thrusterSubsystemData* thruster) {
+void thrusterSubsystem (void* t) {
+  thrusterSubsystemData* thrusterSubsystem = (thrusterSubsystemData*) t;
+
   
-//}
+}
