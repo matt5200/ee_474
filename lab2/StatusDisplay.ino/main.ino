@@ -31,8 +31,8 @@ typedef struct consoleDisplayData{
 } consoleDisplayData;
 
 unsigned int thrusterCommand = 0;
-int batteryLevel =  100;
-int fuelLevel = 100;
+int batteryLevel =  5;
+int fuelLevel = 5;
 short unsigned powerConsumption = 0;
 short unsigned powerGeneration = 0;
 short unsigned motorDrive = 0;
@@ -50,6 +50,17 @@ typedef struct warningAlarmData{
 
 consoleDisplayData *cd;
 warningAlarmData *wd;
+
+
+/*
+  cd->fuelLow = &fuelLow;
+  cd->batteryLow = &batteryLow;
+  cd->solarPanelState = &solarPanelState;
+  cd->batteryLevel = &batteryLevel;  
+  cd->fuelLevel = &fuelLevel;
+  cd->powerConsumption = &powerConsumption;
+  cd->powerGeneration = &powerGeneration;
+*/
 
 void ConsoleDisplay(void *consoleDisplayData);
 void initializeData(consoleDisplayData *ptr);
@@ -74,19 +85,14 @@ void WarningAlarm (void *warn) {
   warningAlarmData *data = (warningAlarmData *) warn;
   tft.setCursor(0, 0);
   tft.setTextColor(WHITE); 
-  tft.print("ALOHA");
- 
-    tft.setCursor(0, 30);
-    tft.print("FUEL");
-
-    Serial.println("HEARAETHAETHAETHAERH");
-      
+  tft.print("Satelite Status");
+    
    tft.setCursor(0, 15);
    if ( *data->fuelLevel > 50) {
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
-   else if (*data->fuelLevel <= 50 && *data->fuelLevel > 10) {
+   else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
     if (fuel_flash == true) {
       if (fuel_flash_two == true) {
       ClearLine(15);
@@ -120,7 +126,7 @@ void WarningAlarm (void *warn) {
       tft.print("FUEL\n");
     }
    }
-    
+       tft.setCursor(0, 30);
     if (*data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
@@ -231,27 +237,20 @@ void setup() {
   }
   tft.begin(identifier);
   tft.fillScreen(BLACK);
-
   wd->fuelLow = &fuelLow;
-  wd->batteryLow = &batteryLow; 
-  wd->batteryLevel = &batteryLevel;
-  wd->fuelLevel = &fuelLevel;
-
-  cd->fuelLow = &fuelLow;
-  cd->batteryLow = &batteryLow;
-  cd->solarPanelState = &solarPanelState;
-  cd->batteryLevel = &batteryLevel;  
-  cd->fuelLevel = &fuelLevel;
-  cd->powerConsumption = &powerConsumption;
-  cd->powerGeneration = &powerGeneration;
+  *wd->batteryLow = batteryLow; 
+  *wd->batteryLevel = batteryLevel;
+  *wd->fuelLevel = fuelLevel;
 }
+  
 
 void loop()
 {
-   WarningAlarm(wd);
-   Serial.println(*wd->fuelLevel);
-   Serial.println(*wd->batteryLevel);
-   //Serial.println(&cd);
-  // ConsoleDisplay(cd);
-    delay(100);
+  
+  WarningAlarm (wd);
+  fuelLevel--;
+  Serial.println("first");
+  Serial.println(fuelLevel);
+  Serial.println("second");
+  Serial.println(*wd->fuelLevel);
 }
