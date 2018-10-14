@@ -31,6 +31,14 @@ int randomInteger(int low, int high)
 
     retVal =  ((int)((high-low+1)*randNum))+low;
   }
+
+  if (retVal < 0) {
+    retVal = 0;
+  }
+  
+  if (retVal > 65535) {
+     retVal = 65535;
+  }
   
   return retVal;
 }

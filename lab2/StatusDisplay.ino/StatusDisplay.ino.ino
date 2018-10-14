@@ -3,7 +3,7 @@
 typedef struct consoleDisplayData{ 
   unsigned  short *nothing;
   unsigned  short *batteryLevel;
-  unsigned short *fuelLevel;
+  float fuelLevel;
  // unsigned  short *batteryLevel;
   unsigned short *powerConsumption;
   unsigned short *powerGeneration;
@@ -14,7 +14,7 @@ typedef struct consoleDisplayData{
 
 typedef struct warningAlarmData{ 
   unsigned short *nothing;
-  unsigned short *fuelLevel;
+  float *fuelLevel;
   unsigned  short *batteryLevel;
   bool *fuelLow;
   bool *batteryLow;

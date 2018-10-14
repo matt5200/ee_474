@@ -25,9 +25,6 @@ void satelliteComs(satelliteComsData satelliteComs) {
     i = 65535;
   }
   
-  Serial.println("***RANDOM NUMBER***");
-  Serial.println(i);
-  Serial.println("*********\n");
   *satelliteComs.thrusterCommand = i;
   
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

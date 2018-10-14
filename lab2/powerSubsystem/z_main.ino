@@ -4,11 +4,12 @@
   unsigned short powerGeneration;
   bool fuelLow;
   bool batteryLow;
-  unsigned short fuelLevel;
+  float fuelLevel;
   unsigned int thrusterCommand;
 
   powerSubsystemData psd;
   satelliteComsData sd;
+  thrusterSubsystemData td;
   
 void setup() {
   Serial.println("Status :");
@@ -38,7 +39,9 @@ void setup() {
   sd.powerConsumption = &powerConsumption;
   sd.powerGeneration = &powerGeneration;
   sd.thrusterCommand = &thrusterCommand;
-  
+  td.fuelLevel = &fuelLevel;
+  td.thrusterCommand = &thrusterCommand;
+  randomSeed(analogRead(0));
 /*  Serial.println("CYCLE");
   Serial.println(cycle);
   Serial.println("LIST");
@@ -54,21 +57,11 @@ void setup() {
 }
 
 void loop() {
-   // Serial.println("Status :");
-  // put your main code here, to run repeatedly:
- //  powerSubsystem( psd);
- /* Serial.println("CYCLE");
-  Serial.println(cycle);
-  Serial.println("LIST");
-    Serial.println("SOLAR PANEL STATE :");
-  Serial.println(*psd.solarPanelState);
-    Serial.println("BATTERY LEVEL");
-  Serial.println(*psd.batteryLevel);
-  Serial.println("POWER CONSUMPTION");
-  Serial.println(*psd.powerConsumption);
-  Serial.println("POWER GENERATION");
-  Serial.println(*psd.powerGeneration);*/
+
   delay(100);
   satelliteComs(sd);
+  thrusterSubsystem(td);
+  Serial.println(*sd.fuelLevel);
+  Serial.println(*sd.thrusterCommand);
   cycle++;
 }

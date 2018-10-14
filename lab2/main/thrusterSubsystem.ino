@@ -24,20 +24,6 @@ void thrusterSubsystem (thrusterSubsystemData thrusterSubsystem) {
   int thruster[4] = {binary[12], binary[13], binary[14], binary[15]};
   int magnitude[4] = {binary[8], binary[9], binary[10], binary[11]};
   int duration[8] = {binary[0], binary[1], binary[2], binary[3], binary[4], binary[5], binary[6], binary[7]};
-
-  Serial.println("THRUSTER");
-  for (int i = 0; i < 4; i++) {
-    Serial.println(thruster[i]);
-  }
-  Serial.println("MAGNITUDe");
-  for (int i = 0; i < 4; i++) {
-    Serial.println(magnitude[i]);
-  }
-  Serial.println("DURATION");
-  for (int i = 0; i < 8; i++) {
-    Serial.println(duration[i]);
-  }
-  Serial.println("\n\n");
   
   // convert duration binary to decimal
   int durationTime = 0;
