@@ -20,6 +20,8 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
 
+
+
 unsigned short batteryLevel;
 unsigned short thrusterCommand;
 unsigned short fuelLevel;
@@ -31,34 +33,8 @@ bool fuelLow;
 bool batteryLow;
 
 
-typedef struct powerSubsystemData {
-  bool* solarPanelState;
-  unsigned short* batteryLevel;
-  unsigned short* powerConsumption;
-  unsigned short* powerGeneration;
-} powerSubsystemData;
-
-
-typedef struct consoleDisplayData{ 
-  int  *batteryLevel;
-  unsigned short *fuelLevel;
-  unsigned short *powerConsumption;
-  unsigned short *powerGeneration;
-  bool *fuelLow;
-  bool *batteryLow;
-  bool *solarPanelState;
-} consoleDisplayData;
-
-typedef struct warningAlarmData{ 
-  int *batteryLevel;
-  unsigned short *fuelLevel;
-  bool *fuelLow;
-  bool *batteryLow;
-} warningAlarmData;
-
-
-consoleDisplayData *cd;
-warningAlarmData *wd;
+consoleDisplayData cd;
+warningAlarmData wd;
 
 void ConsoleDisplay(void *consoleDisplayData);
 void initializeData(consoleDisplayData *ptr);
@@ -339,21 +315,21 @@ void setup() {
   fuel_flash = true;
   fuel_flash_two = true;
 
-  wd->batteryLow = &batteryLow; 
-  wd->fuelLevel = &fuelLevel;
+  wd.batteryLow = &batteryLow; 
+  wd.fuelLevel = &fuelLevel;
 
   
-  cd->fuelLow = &fuelLow;
-  cd->batteryLow = &batteryLow;
-  cd->solarPanelState = &solarPanelState;
-  cd->batteryLevel = &batteryLevel;  
-  cd->fuelLevel = &fuelLevel;
-  cd->powerConsumption = &powerConsumption;
-  cd->powerGeneration = &powerGeneration;
+  cd.fuelLow = &fuelLow;
+  cd.batteryLow = &batteryLow;
+  cd.solarPanelState = &solarPanelState;
+  cd.batteryLevel = &batteryLevel;  
+  cd.fuelLevel = &fuelLevel;
+  cd.powerConsumption = &powerConsumption;
+  cd.powerGeneration = &powerGeneration;
 
-  wd->batteryLevel = &batteryLevel;
-  cd->batteryLevel = &batteryLevel;
-  wd->fuelLow = &fuelLow;
+  wd.batteryLevel = &batteryLevel;
+  cd.batteryLevel = &batteryLevel;
+  wd.fuelLow = &fuelLow;
 }
   
 
@@ -383,31 +359,31 @@ void loop()
  batteryLevel++;
   Serial.println("WD VALS");
       Serial.println("batteryLevel");
-  Serial.println((unsigned int)wd->batteryLevel, HEX);
+  Serial.println((unsigned int)wd.batteryLevel, HEX);
   Serial.println("fuelLow");
-  Serial.println(*wd->fuelLow);
+  Serial.println(*wd.fuelLow);
   Serial.println("batteryLow");
-  Serial.println(*wd->batteryLow);
+  Serial.println(*wd.batteryLow);
 
   Serial.println("fuelLevel");
-  Serial.println(*wd->fuelLevel);
+  Serial.println(*wd.fuelLevel);
   
  
   Serial.println("CD VALS");
     Serial.println("batteryLevel");
-  Serial.println((unsigned int)cd->batteryLevel, HEX);
+  Serial.println((unsigned int)cd.batteryLevel, HEX);
   Serial.println("fuelLow");
-  Serial.println(*cd->fuelLow);
+  Serial.println(*cd.fuelLow);
   Serial.println("batteryLow");
-  Serial.println(*cd->batteryLow);
+  Serial.println(*cd.batteryLow);
   Serial.println("solarPanelState");
-  Serial.println(*cd->solarPanelState);
+  Serial.println(*cd.solarPanelState);
    Serial.println("fuelLevel");
-  Serial.println(*cd->fuelLevel);
+  Serial.println(*cd.fuelLevel);
    Serial.println("powerConsumption");
-  Serial.println(*cd->powerConsumption);
+  Serial.println(*cd.powerConsumption);
    Serial.println("powerGeneration");
-  Serial.println(*cd->powerGeneration);
+  Serial.println(*cd.powerGeneration);
 
   delay(1000);
 }
