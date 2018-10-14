@@ -1,63 +1,29 @@
-
-
-  bool solarPanelState;
-  unsigned short batteryLevel;
-  unsigned short powerConsumption;
-  unsigned short powerGeneration;
-  bool fuelLow;
-  bool batteryLow;
-  float fuelLevel;
-  unsigned int thrusterCommand;
-  void * fn[6];
+bool solarPanelState;
+unsigned short batteryLevel;
+unsigned short powerConsumption;
+unsigned short powerGeneration;
+bool fuelLow;
+bool batteryLow;
+float fuelLevel;
+unsigned int thrusterCommand;
   
-typedef struct pwrTask
-{
-void (*powerSubsystemsData)(void*);
-void* power;
-} pwrTask;
+typedef struct TCB {
+void (*myTask)(void*);
+ void* taskDataPtr;
+} TCB; 
 
-typedef struct satelliteTask
-{
-void (*satelliteComsData)(void*);
-void* sattelite;
-} satelliteTask;
+TCB* fn[6];
 
+powerSubsystemData psd;
+satelliteComsData sd;
+thrusterSubsystemData td;
+consoleDisplayData cd;
+warningAlarmData wd;
 
-typedef struct thrusterTask
-{
-void (*thrusterSubsystem)(void*);
-void* thruster;
-} thrusterTask;
-
-typedef struct consoleTask
-{
-void (*ConsoleDisplay)(void*);
-void* console;
-} console;
-
-
-typedef struct warningTask
-{
-void (*WarningAlarm)(void*);
-void* warningAlarmData;
-} pwrTask;
-
-typedef struct pwrTask
-{
-void (*powerSubsystemsData)(void*);
-void* power;
-} pwrTask;
-
-
-  powerSubsystemData psd;
-  satelliteComsData sd;
-  thrusterSubsystemData td;
-  consoleDisplayData cd;
-  warningAlarmData wd;
   
 void setup() {
+   Serial.begin(9600);
   Serial.println("Status :");
-  Serial.begin(9600);
   batt_flash = true;
   fuel_flash = true;
   fuel_flash_two = true;
@@ -149,6 +115,17 @@ void setup() {
   cd.powerConsumption = &powerConsumption;
   cd.powerGeneration = &powerGeneration;
   randomSeed(analogRead(0));
+
+    fn[0]->myTask = powerSubsystemData;
+    fn[0]->taskDataPtr = &psd;
+    fn[1]->myTask = thrusterSubsystem;
+    fn[1]->taskDataPtr = &sd;
+    fn[2]->myTask = satelliteComs;
+    fn[2]->taskDataPtr = &td;
+    fn[3]->myTask = consoleDisplayData;
+    fn[3]->taskDataPtr = &cd;
+    fn[4]->myTask = WarningAlarm;
+    fn[4]->taskDataPtr = &wd;
 }
 
 void loop() {
