@@ -12,7 +12,7 @@ void (*myTask)(void*);
  void* taskDataPtr;
 } TCB; 
 
-TCB* fn[6];
+TCB fn[6];
 
 powerSubsystemData psd;
 satelliteComsData sd;
@@ -86,7 +86,6 @@ void setup() {
   batteryLow = false;
   fuelLevel = 100;
   thrusterCommand = 0;
-
   psd.solarPanelState = &solarPanelState;
   psd.batteryLevel = &batteryLevel;
   psd.powerConsumption = &powerConsumption;
@@ -116,25 +115,29 @@ void setup() {
   cd.powerGeneration = &powerGeneration;
   randomSeed(analogRead(0));
 
-    fn[0]->myTask = powerSubsystemData;
-    fn[0]->taskDataPtr = &psd;
-    fn[1]->myTask = thrusterSubsystem;
-    fn[1]->taskDataPtr = &sd;
-    fn[2]->myTask = satelliteComs;
-    fn[2]->taskDataPtr = &td;
-    fn[3]->myTask = consoleDisplayData;
-    fn[3]->taskDataPtr = &cd;
-    fn[4]->myTask = WarningAlarm;
-    fn[4]->taskDataPtr = &wd;
+   fn[0].myTask = &powerSubsystem;
+   fn[0].taskDataPtr = &psd;
+   fn[1].myTask = &thrusterSubsystem;
+   fn[1].taskDataPtr = &td;
+   fn[2].myTask = &satelliteComs;
+   fn[2].taskDataPtr = &sd;
+   fn[3].myTask = &ConsoleDisplay;
+   fn[3].taskDataPtr = &cd;
+   fn[4].myTask = &WarningAlarm;
+   fn[4].taskDataPtr = &wd;
 }
 
 void loop() {
+  
 
   delay(100);
-  powerSubsystem(psd);
-  satelliteComs(sd);
-  thrusterSubsystem(td);
-  WarningAlarm (wd);
-  ConsoleDisplay(cd);
+  Serial.println("test");
+
+
+   for (int i = 0; i < 5; i++) {
+      (fn[i].myTask)(fn[i].taskDataPtr);
+        delay(1000);
+      (fn[4].myTask)(fn[4].taskDataPtr);
+  }
   cycle++;
 }

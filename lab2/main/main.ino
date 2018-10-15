@@ -39,8 +39,8 @@ typedef struct warningAlarmData{
 } warningAlarmData;
 
 
-void ConsoleDisplay(consoleDisplayData cd);
-void WarningAlarm (warningAlarmData data);
+void ConsoleDisplay(void* cdd);
+void WarningAlarm (void* d);
 void ClearLine(int y_coord);
 
   bool batt_flash;
@@ -57,19 +57,20 @@ void ClearLine(int y_coord) {
 }
 
 
-void WarningAlarm (warningAlarmData data) {
-  
+void WarningAlarm (void* d) {
+   
+  warningAlarmData* data = (warningAlarmData*) d;
  
   tft.setCursor(0, 0);
   tft.setTextColor(WHITE); 
   tft.print("Satelite Status");
     
    tft.setCursor(0, 15);
-   if ( *data.fuelLevel > 50) {
+   if ( *data->fuelLevel > 50) {
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
-   else if ( *data.fuelLevel <= 50 && *data.fuelLevel > 10) {
+   else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
     if (fuel_flash == true) {
       if (fuel_flash_two == true) {
       ClearLine(15);
@@ -104,11 +105,11 @@ void WarningAlarm (warningAlarmData data) {
     }
    }
        tft.setCursor(0, 30);
-    if (*data.batteryLevel > 50) {
+    if (*data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
     }
-   else if (*data.batteryLevel <= 50 && *data.batteryLevel > 10) {
+   else if (*data->batteryLevel <= 50 && *data->batteryLevel > 10) {
     if (batt_flash == true) {
       ClearLine(30);
       batt_flash = false; 
@@ -130,33 +131,31 @@ void WarningAlarm (warningAlarmData data) {
     tft.print("BATTERY\n");
     }
  }
-  delay(1000);
 }
 
-void ConsoleDisplay( consoleDisplayData data) 
-{
-
+void ConsoleDisplay( void* cdd) {
+    consoleDisplayData* data = (consoleDisplayData*) cdd;
     Serial.println("Panel State :");
-    Serial.println(*data.solarPanelState);
+    Serial.println(*data->solarPanelState);
     Serial.println("\n");
     Serial.println("Battery Level :");
-    Serial.println(*data.batteryLevel);
+    Serial.println(*data->batteryLevel);
     Serial.println("\n");
     Serial.println("Fuel Low Status :");
     Serial.println("\n");
     Serial.println("Power Consumption :");
-    Serial.println(*data.powerConsumption);
+    Serial.println(*data->powerConsumption);
     Serial.println("\n");
     Serial.println("Battery Low :");
-    Serial.println(*data.batteryLow);
+    Serial.println(*data->batteryLow);
     Serial.println("\n");
     Serial.println("Fuel Level :");
-    Serial.println(*data.fuelLevel);
+    Serial.println(*data->fuelLevel);
     Serial.println("\n");
     Serial.println("Power Consumption :");
-    Serial.println(*data.powerConsumption);
+    Serial.println(*data->powerConsumption);
     Serial.println("\n");
     Serial.println("Power Generation :");
-    Serial.println(*data.powerGeneration);
+    Serial.println(*data->powerGeneration);
     Serial.println("\n");
 }

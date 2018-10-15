@@ -8,10 +8,10 @@ typedef struct satelliteComsData {
   unsigned short* powerGeneration;
   unsigned int* thrusterCommand;
 } satelliteComsData;
-void satelliteComs(satelliteComsData satelliteComs);
+void satelliteComs(void* s);
 
-void satelliteComs(satelliteComsData satelliteComs) {
-
+void satelliteComs(void* s) {
+  satelliteComsData* satelliteComs = (satelliteComsData*) s;
   unsigned short left = 0;
   unsigned short right = 0;
   unsigned short up = 0;
@@ -25,7 +25,7 @@ void satelliteComs(satelliteComsData satelliteComs) {
     i = 65535;
   }
   
-  *satelliteComs.thrusterCommand = i;
+  *satelliteComs->thrusterCommand = i;
   
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   int count = 15;

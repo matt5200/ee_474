@@ -3,21 +3,21 @@ typedef struct thrusterSubsystemData {
   unsigned int* thrusterCommand;
 } thrusterSubsystemData;
 
-void thrusterSubsystem (thrusterSubsystemData thrusterSubsystem);
+void thrusterSubsystem (void* t);
 
-void thrusterSubsystem (thrusterSubsystemData thrusterSubsystem) {
-
+void thrusterSubsystem (void* t) {
+  thrusterSubsystemData* thrusterSubsystem = (thrusterSubsystemData*) t;
   // convert decimal to binary
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   int count = 15;
-  while (*thrusterSubsystem.thrusterCommand != 0) {
-    int rem = *thrusterSubsystem.thrusterCommand % 2;
+  while (*thrusterSubsystem->thrusterCommand != 0) {
+    int rem = *thrusterSubsystem->thrusterCommand % 2;
     if (rem == 1) {
-      *thrusterSubsystem.thrusterCommand = *thrusterSubsystem.thrusterCommand - 1;
+      *thrusterSubsystem->thrusterCommand = *thrusterSubsystem->thrusterCommand - 1;
       binary[count] = 1;
     }
     count = count - 1;
-    *thrusterSubsystem.thrusterCommand = *thrusterSubsystem.thrusterCommand / 2;
+    *thrusterSubsystem->thrusterCommand = *thrusterSubsystem->thrusterCommand / 2;
   }
 
   // Generating control commands for thrusters
@@ -41,6 +41,6 @@ void thrusterSubsystem (thrusterSubsystemData thrusterSubsystem) {
     mag = .50;
   }
   // .0076 is the fuel burn per hour
-  *thrusterSubsystem.fuelLevel = *thrusterSubsystem.fuelLevel - mag*.0076*durationTime;
+   *thrusterSubsystem->fuelLevel = *thrusterSubsystem->fuelLevel - mag*.0076*durationTime;
   
 }
