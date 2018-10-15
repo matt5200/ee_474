@@ -105,6 +105,8 @@ void setup() {
   
   wd.batteryLow = &batteryLow; 
   wd.fuelLevel = &fuelLevel;
+  wd.fuelLow = &batteryLow; 
+  wd.batteryLevel = &batteryLevel;
   
   cd.fuelLow = &fuelLow;
   cd.batteryLow = &batteryLow;
@@ -130,13 +132,13 @@ void setup() {
 void loop() {
   
 
-  delay(100);
+  delay(1000);
   Serial.println("test");
 
 
-   for (int i = 0; i < 5; i++) {
+   for (int i = 0; i < 4; i++) {
       (fn[i].myTask)(fn[i].taskDataPtr);
-        delay(1000);
+       delay(1000);
       (fn[4].myTask)(fn[4].taskDataPtr);
   }
   cycle++;

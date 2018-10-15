@@ -42,5 +42,7 @@ void thrusterSubsystem (void* t) {
   }
   // .0076 is the fuel burn per hour
    *thrusterSubsystem->fuelLevel = *thrusterSubsystem->fuelLevel - mag*.0076*durationTime;
-  
+   if (*thrusterSubsystem->fuelLevel < 0) {
+    *thrusterSubsystem->fuelLevel = 0;
+   }
 }

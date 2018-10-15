@@ -31,7 +31,6 @@ typedef struct consoleDisplayData{
 } consoleDisplayData;
 
 typedef struct warningAlarmData{ 
-  unsigned short *nothing;
   float *fuelLevel;
   unsigned  short *batteryLevel;
   bool *fuelLow;
@@ -105,7 +104,7 @@ void WarningAlarm (void* d) {
     }
    }
        tft.setCursor(0, 30);
-    if (*data->batteryLevel > 50) {
+   if (*data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
     }
