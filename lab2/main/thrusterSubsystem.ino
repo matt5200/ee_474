@@ -1,3 +1,4 @@
+// Struct for all data relevant to thruster system
 typedef struct thrusterSubsystemData {
   float* fuelLevel;
   unsigned int* thrusterCommand;

@@ -1,3 +1,4 @@
+// Struct containing all power subsystems data
 typedef struct powerSubsystemData {
   bool* solarPanelState;
   unsigned short* batteryLevel;
@@ -5,13 +6,14 @@ typedef struct powerSubsystemData {
   unsigned short* powerGeneration;
 } powerSubsystemData;
 
- int cycle;
- int reverse;
+int cycle;
+int reverse;
 
 void powerSubsystem(void* p);
 
 void powerSubsystem(void* p) {
   powerSubsystemData* power = (powerSubsystemData*) p;
+  // Logic for calculating the power consumption
   if (*power->powerConsumption > 10) {
     reverse = 1;
   } else if (*power->powerConsumption < 5) {
@@ -35,7 +37,7 @@ void powerSubsystem(void* p) {
     }
   }
 
-  // powerGeneration
+  // Logic for updating the Power Generation
   if (*power->solarPanelState == true) {
     if (*power->batteryLevel > 95) {
       *power->solarPanelState = false;
@@ -62,7 +64,7 @@ void powerSubsystem(void* p) {
     }
   }
 
-  // batteryLevel
+  // Logic for updating the solar panel state
   if (*power->solarPanelState == false) {
     if (*power->batteryLevel >= (3 * *power->powerConsumption) ) {
       *power->batteryLevel = *power->batteryLevel - (3 * (*power->powerConsumption));

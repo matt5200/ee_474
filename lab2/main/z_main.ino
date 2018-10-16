@@ -1,3 +1,4 @@
+// Initialize all global variables
 bool solarPanelState;
 unsigned short batteryLevel;
 unsigned short powerConsumption;
@@ -6,14 +7,17 @@ bool fuelLow;
 bool batteryLow;
 float fuelLevel;
 unsigned int thrusterCommand;
-  
+
+// Initialize struct for TCB
 typedef struct TCB {
 void (*myTask)(void*);
  void* taskDataPtr;
 } TCB; 
 
+// Initialize global variable for TCB array
 TCB fn[6];
 
+// Initialize all global structs
 powerSubsystemData psd;
 satelliteComsData sd;
 thrusterSubsystemData td;
@@ -22,12 +26,15 @@ warningAlarmData wd;
 
   
 void setup() {
-   Serial.begin(9600);
-  Serial.println("Status :");
+
+  // Begin communication between board and computer
+  Serial.begin(9600);
+  // Set booleans for battery and fuel flash to true
   batt_flash = true;
   fuel_flash = true;
   fuel_flash_two = true;
 
+  // The following code is for the TFT display
   #ifdef USE_Elegoo_SHIELD_PINOUT
   Serial.println(F("Using Elegoo 2.4\" TFT Arduino Shield Pinout"));
   #else
@@ -76,21 +83,23 @@ void setup() {
   tft.begin(identifier);
   tft.fillScreen(BLACK);
 
+  // Set all of the global variables and structs
   solarPanelState = false;
-  batteryLevel = 100;
+  batteryLevel = 15;
   powerConsumption = 0;
   powerGeneration = 0;
   cycle = 1;
   reverse = 0;
   fuelLow = false;
   batteryLow = false;
-  fuelLevel = 100;
+  fuelLevel = 7;
   thrusterCommand = 0;
+  // Set the struct pointers for the power subsystem
   psd.solarPanelState = &solarPanelState;
   psd.batteryLevel = &batteryLevel;
   psd.powerConsumption = &powerConsumption;
   psd.powerGeneration = &powerGeneration;
-  
+  // Set the struct pointers for the satellite comms
   sd.fuelLow = &fuelLow;
   sd.batteryLow = &batteryLow;
   sd.solarPanelState = &solarPanelState;
@@ -99,15 +108,15 @@ void setup() {
   sd.powerConsumption = &powerConsumption;
   sd.powerGeneration = &powerGeneration;
   sd.thrusterCommand = &thrusterCommand;
-  
+  // Set the struct pointers for the thruster system
   td.fuelLevel = &fuelLevel;
   td.thrusterCommand = &thrusterCommand;
-  
+  // Set the struct pointers for the warning data
   wd.batteryLow = &batteryLow; 
   wd.fuelLevel = &fuelLevel;
   wd.fuelLow = &batteryLow; 
   wd.batteryLevel = &batteryLevel;
-  
+  // Set the struct pointers for the console display data.
   cd.fuelLow = &fuelLow;
   cd.batteryLow = &batteryLow;
   cd.solarPanelState = &solarPanelState;
@@ -116,7 +125,8 @@ void setup() {
   cd.powerConsumption = &powerConsumption;
   cd.powerGeneration = &powerGeneration;
   randomSeed(analogRead(0));
-
+  // Set the task queue array' pointers to the correct functions
+  // and data for each task
    fn[0].myTask = &powerSubsystem;
    fn[0].taskDataPtr = &psd;
    fn[1].myTask = &thrusterSubsystem;
@@ -133,9 +143,10 @@ void loop() {
   
 
   delay(1000);
-  Serial.println("test");
+  // Print statement to veriy board is updating
+  Serial.println("****");
 
-
+  // Delay between cycles is for minor cycle requirements
    for (int i = 0; i < 4; i++) {
       (fn[i].myTask)(fn[i].taskDataPtr);
        delay(1000);

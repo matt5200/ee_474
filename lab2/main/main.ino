@@ -1,4 +1,5 @@
-
+// The following declerations are neccessary for the tft board to function
+// The code was also provided by the Elegoo company, https://www.elegoo.com/
 #include <TFT.h>
 #include <SPI.h>
 #include <Elegoo_GFX.h>    // Core graphics library
@@ -17,9 +18,10 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 #define ORANGE  0xFFA5
+// Initialize tft display
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
-
+// Struct containing all data relevant to console displau
 typedef struct consoleDisplayData{ 
   unsigned  short *batteryLevel;
   float *fuelLevel;
@@ -29,7 +31,7 @@ typedef struct consoleDisplayData{
   bool *batteryLow;
   bool *solarPanelState;
 } consoleDisplayData;
-
+// Struct containing all data relevant to warning alarm system
 typedef struct warningAlarmData{ 
   float *fuelLevel;
   unsigned  short *batteryLevel;
@@ -37,16 +39,15 @@ typedef struct warningAlarmData{
   bool *batteryLow;
 } warningAlarmData;
 
-
 void ConsoleDisplay(void* cdd);
 void WarningAlarm (void* d);
 void ClearLine(int y_coord);
 
-  bool batt_flash;
-  bool fuel_flash;
-  bool fuel_flash_two;
+bool batt_flash;
+bool fuel_flash;
+bool fuel_flash_two;
 
-
+// Function to clear a line of the tft display
 void ClearLine(int y_coord) {
   for (int x = 0; x < 80; x++) {
     for (int y = y_coord; y < y_coord + 8; y++) {
@@ -55,16 +56,17 @@ void ClearLine(int y_coord) {
   }
 }
 
-
+// Warning alarm function
 void WarningAlarm (void* d) {
    
   warningAlarmData* data = (warningAlarmData*) d;
- 
+  // Set cursor to top right to print satellite status
   tft.setCursor(0, 0);
   tft.setTextColor(WHITE); 
-  tft.print("Satelite Status");
+  tft.print("Satellite Status");
     
    tft.setCursor(0, 15);
+   // Following is logic for determing fuel print state
    if ( *data->fuelLevel > 50) {
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
@@ -104,6 +106,7 @@ void WarningAlarm (void* d) {
     }
    }
        tft.setCursor(0, 30);
+   // Following is logic for determing battery print state
    if (*data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
