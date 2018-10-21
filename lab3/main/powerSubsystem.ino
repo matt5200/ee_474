@@ -1,7 +1,10 @@
 // Struct containing all power subsystems data
 typedef struct powerSubsystemData {
   bool* solarPanelState;
-  unsigned short* batteryLevel;
+  bool* solarPanelDeploy;
+  bool* solarPanelRetract;
+  unsigned int* batteryLevelPtr;
+  //unsigned short* batteryLevel;
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
 } powerSubsystemData;
@@ -63,6 +66,21 @@ void powerSubsystem(void* p) {
       *power->solarPanelState = true;
     }
   }
+
+  // put pinMode(13, OUTPUT)
+  // in setup in main
+  
+
+
+
+
+
+
+
+
+
+
+
 
   // Logic for updating the solar panel state
   if (*power->solarPanelState == false) {
