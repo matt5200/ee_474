@@ -29,6 +29,7 @@ void setup() {
 
   // Begin communication between board and computer
   Serial.begin(9600);
+  Serial1.begin(9600);
   // Set booleans for battery and fuel flash to true
   batt_flash = true;
   fuel_flash = true;
@@ -141,16 +142,15 @@ void setup() {
 
 void loop() {
   
-
+  char T[] = "ABC";
   delay(1000);
   // Print statement to veriy board is updating
-  Serial.println("****");
-
+  String response = vehicleCommunicate(T);
   // Delay between cycles is for minor cycle requirements
-   for (int i = 0; i < 4; i++) {
+  /* for (int i = 0; i < 4; i++) {
       (fn[i].myTask)(fn[i].taskDataPtr);
        delay(1000);
       (fn[4].myTask)(fn[4].taskDataPtr);
   }
-  cycle++;
+  cycle++;*/
 }

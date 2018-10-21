@@ -139,18 +139,66 @@ void setup() {
    fn[4].taskDataPtr = &wd;
 }
 
+
+
+void communicate() {
+  char inChar;
+  char inputString[10];
+  bool stringComplete = false;
+  // represent start bit found
+  bool start = false;
+  // Looking for start
+
+  
+  while (Serial.available()) {
+    delay(100);
+    inChar = (char)Serial.read();
+    // Find Start
+    if(inChar == '$') {
+      break;
+    }
+  }
+
+  Serial.println("Start");
+  start = false;
+  int bitCount = 0;
+  // Okay have the start
+  int index = 0;
+ while (Serial.available()) {
+    delay(300);
+    // get the new byte:
+    inChar = (char)Serial.read();
+    bitCount++;
+    // add it to the inputString:
+    inputString[index] = inChar;
+    index++;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if(inChar == '$') {
+      break;
+    }
+  }
+  
+ // Begin Response
+ Serial.write("$");
+ // Send detected count of bits
+ //Serial.write(bitCount);
+ // Send what you received
+ Serial.write(inputString, index + 1);
+ // End Response
+ Serial.write("$");
+ // Don't know
+ String string;
+ for (int i = 0; i < 3; i++) {
+  string+=inputString[i];
+ }
+ Serial.println(string);
+ Serial.println("End");
+}
+
 void loop() {
   
-
   delay(1000);
-  // Print statement to veriy board is updating
-  Serial.println("****");
-
-  // Delay between cycles is for minor cycle requirements
-   for (int i = 0; i < 4; i++) {
-      (fn[i].myTask)(fn[i].taskDataPtr);
-       delay(1000);
-      (fn[4].myTask)(fn[4].taskDataPtr);
-  }
-  cycle++;
+  communicate();
+  
 }
