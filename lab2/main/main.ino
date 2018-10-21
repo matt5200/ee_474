@@ -1,4 +1,5 @@
-
+// The following declerations are neccessary for the tft board to function
+// The code was also provided by the Elegoo company, https://www.elegoo.com/
 #include <TFT.h>
 #include <SPI.h>
 #include <Elegoo_GFX.h>    // Core graphics library
@@ -17,9 +18,10 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 #define ORANGE  0xFFA5
+// Initialize tft display
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
-
+// Struct containing all data relevant to console displau
 typedef struct consoleDisplayData{ 
   unsigned  short *batteryLevel;
   float *fuelLevel;
@@ -29,25 +31,23 @@ typedef struct consoleDisplayData{
   bool *batteryLow;
   bool *solarPanelState;
 } consoleDisplayData;
-
+// Struct containing all data relevant to warning alarm system
 typedef struct warningAlarmData{ 
-  unsigned short *nothing;
   float *fuelLevel;
   unsigned  short *batteryLevel;
   bool *fuelLow;
   bool *batteryLow;
 } warningAlarmData;
 
-
-void ConsoleDisplay(consoleDisplayData cd);
-void WarningAlarm (warningAlarmData data);
+void ConsoleDisplay(void* cdd);
+void WarningAlarm (void* d);
 void ClearLine(int y_coord);
 
-  bool batt_flash;
-  bool fuel_flash;
-  bool fuel_flash_two;
+bool batt_flash;
+bool fuel_flash;
+bool fuel_flash_two;
 
-
+// Function to clear a line of the tft display
 void ClearLine(int y_coord) {
   for (int x = 0; x < 80; x++) {
     for (int y = y_coord; y < y_coord + 8; y++) {
@@ -56,20 +56,22 @@ void ClearLine(int y_coord) {
   }
 }
 
-
-void WarningAlarm (warningAlarmData data) {
-  
- 
+// Warning alarm function
+void WarningAlarm (void* d) {
+   
+  warningAlarmData* data = (warningAlarmData*) d;
+  // Set cursor to top right to print satellite status
   tft.setCursor(0, 0);
   tft.setTextColor(WHITE); 
-  tft.print("Satelite Status");
+  tft.print("Satellite Status");
     
    tft.setCursor(0, 15);
-   if ( *data.fuelLevel > 50) {
+   // Following is logic for determing fuel print state
+   if ( *data->fuelLevel > 50) {
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
-   else if ( *data.fuelLevel <= 50 && *data.fuelLevel > 10) {
+   else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
     if (fuel_flash == true) {
       if (fuel_flash_two == true) {
       ClearLine(15);
@@ -104,11 +106,12 @@ void WarningAlarm (warningAlarmData data) {
     }
    }
        tft.setCursor(0, 30);
-    if (*data.batteryLevel > 50) {
+   // Following is logic for determing battery print state
+   if (*data->batteryLevel > 50) {
     tft.setTextColor(GREEN);
     tft.print("BATTERY\n");
     }
-   else if (*data.batteryLevel <= 50 && *data.batteryLevel > 10) {
+   else if (*data->batteryLevel <= 50 && *data->batteryLevel > 10) {
     if (batt_flash == true) {
       ClearLine(30);
       batt_flash = false; 
@@ -130,33 +133,31 @@ void WarningAlarm (warningAlarmData data) {
     tft.print("BATTERY\n");
     }
  }
-  delay(1000);
 }
 
-void ConsoleDisplay( consoleDisplayData data) 
-{
-
+void ConsoleDisplay( void* cdd) {
+    consoleDisplayData* data = (consoleDisplayData*) cdd;
     Serial.println("Panel State :");
-    Serial.println(*data.solarPanelState);
+    Serial.println(*data->solarPanelState);
     Serial.println("\n");
     Serial.println("Battery Level :");
-    Serial.println(*data.batteryLevel);
+    Serial.println(*data->batteryLevel);
     Serial.println("\n");
     Serial.println("Fuel Low Status :");
     Serial.println("\n");
     Serial.println("Power Consumption :");
-    Serial.println(*data.powerConsumption);
+    Serial.println(*data->powerConsumption);
     Serial.println("\n");
     Serial.println("Battery Low :");
-    Serial.println(*data.batteryLow);
+    Serial.println(*data->batteryLow);
     Serial.println("\n");
     Serial.println("Fuel Level :");
-    Serial.println(*data.fuelLevel);
+    Serial.println(*data->fuelLevel);
     Serial.println("\n");
     Serial.println("Power Consumption :");
-    Serial.println(*data.powerConsumption);
+    Serial.println(*data->powerConsumption);
     Serial.println("\n");
     Serial.println("Power Generation :");
-    Serial.println(*data.powerGeneration);
+    Serial.println(*data->powerGeneration);
     Serial.println("\n");
 }

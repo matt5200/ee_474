@@ -1,3 +1,4 @@
+// Struct containing all data for the satellite data
 typedef struct satelliteComsData {
   bool* fuelLow;
   bool* batteryLow;
@@ -8,10 +9,12 @@ typedef struct satelliteComsData {
   unsigned short* powerGeneration;
   unsigned int* thrusterCommand;
 } satelliteComsData;
-void satelliteComs(satelliteComsData satelliteComs);
 
-void satelliteComs(satelliteComsData satelliteComs) {
+void satelliteComs(void* s);
 
+void satelliteComs(void* s) {
+  satelliteComsData* satelliteComs = (satelliteComsData*) s;
+  // initialize the thruster direction commands
   unsigned short left = 0;
   unsigned short right = 0;
   unsigned short up = 0;
@@ -25,8 +28,8 @@ void satelliteComs(satelliteComsData satelliteComs) {
     i = 65535;
   }
   
-  *satelliteComs.thrusterCommand = i;
-  
+  *satelliteComs->thrusterCommand = i;
+  // array to hold binary encoding of thruster command
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   int count = 15;
   // convert decimal to binary
@@ -45,6 +48,7 @@ void satelliteComs(satelliteComsData satelliteComs) {
   right = binary[14];
   up = binary[13];
   down = binary[12];
+  // Generate thruster control commands
   int magnitude[4] = {binary[8], binary[9], binary[10], binary[11]};
   int duration[8] = {binary[0], binary[1], binary[2], binary[3], binary[4], binary[5], binary[6], binary[7]};
  

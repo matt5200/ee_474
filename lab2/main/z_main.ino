@@ -1,67 +1,40 @@
+// Initialize all global variables
+bool solarPanelState;
+unsigned short batteryLevel;
+unsigned short powerConsumption;
+unsigned short powerGeneration;
+bool fuelLow;
+bool batteryLow;
+float fuelLevel;
+unsigned int thrusterCommand;
 
+// Initialize struct for TCB
+typedef struct TCB {
+void (*myTask)(void*);
+ void* taskDataPtr;
+} TCB; 
 
-  bool solarPanelState;
-  unsigned short batteryLevel;
-  unsigned short powerConsumption;
-  unsigned short powerGeneration;
-  bool fuelLow;
-  bool batteryLow;
-  float fuelLevel;
-  unsigned int thrusterCommand;
-  void * fn[6];
-  
-typedef struct pwrTask
-{
-void (*powerSubsystemsData)(void*);
-void* power;
-} pwrTask;
+// Initialize global variable for TCB array
+TCB fn[6];
 
-typedef struct satelliteTask
-{
-void (*satelliteComsData)(void*);
-void* sattelite;
-} satelliteTask;
+// Initialize all global structs
+powerSubsystemData psd;
+satelliteComsData sd;
+thrusterSubsystemData td;
+consoleDisplayData cd;
+warningAlarmData wd;
 
-
-typedef struct thrusterTask
-{
-void (*thrusterSubsystem)(void*);
-void* thruster;
-} thrusterTask;
-
-typedef struct consoleTask
-{
-void (*ConsoleDisplay)(void*);
-void* console;
-} console;
-
-
-typedef struct warningTask
-{
-void (*WarningAlarm)(void*);
-void* warningAlarmData;
-} pwrTask;
-
-typedef struct pwrTask
-{
-void (*powerSubsystemsData)(void*);
-void* power;
-} pwrTask;
-
-
-  powerSubsystemData psd;
-  satelliteComsData sd;
-  thrusterSubsystemData td;
-  consoleDisplayData cd;
-  warningAlarmData wd;
   
 void setup() {
-  Serial.println("Status :");
+
+  // Begin communication between board and computer
   Serial.begin(9600);
+  // Set booleans for battery and fuel flash to true
   batt_flash = true;
   fuel_flash = true;
   fuel_flash_two = true;
 
+  // The following code is for the TFT display
   #ifdef USE_Elegoo_SHIELD_PINOUT
   Serial.println(F("Using Elegoo 2.4\" TFT Arduino Shield Pinout"));
   #else
@@ -110,22 +83,23 @@ void setup() {
   tft.begin(identifier);
   tft.fillScreen(BLACK);
 
+  // Set all of the global variables and structs
   solarPanelState = false;
-  batteryLevel = 100;
+  batteryLevel = 15;
   powerConsumption = 0;
   powerGeneration = 0;
   cycle = 1;
   reverse = 0;
   fuelLow = false;
   batteryLow = false;
-  fuelLevel = 100;
+  fuelLevel = 7;
   thrusterCommand = 0;
-
+  // Set the struct pointers for the power subsystem
   psd.solarPanelState = &solarPanelState;
   psd.batteryLevel = &batteryLevel;
   psd.powerConsumption = &powerConsumption;
   psd.powerGeneration = &powerGeneration;
-  
+  // Set the struct pointers for the satellite comms
   sd.fuelLow = &fuelLow;
   sd.batteryLow = &batteryLow;
   sd.solarPanelState = &solarPanelState;
@@ -134,13 +108,15 @@ void setup() {
   sd.powerConsumption = &powerConsumption;
   sd.powerGeneration = &powerGeneration;
   sd.thrusterCommand = &thrusterCommand;
-  
+  // Set the struct pointers for the thruster system
   td.fuelLevel = &fuelLevel;
   td.thrusterCommand = &thrusterCommand;
-  
+  // Set the struct pointers for the warning data
   wd.batteryLow = &batteryLow; 
   wd.fuelLevel = &fuelLevel;
-  
+  wd.fuelLow = &batteryLow; 
+  wd.batteryLevel = &batteryLevel;
+  // Set the struct pointers for the console display data.
   cd.fuelLow = &fuelLow;
   cd.batteryLow = &batteryLow;
   cd.solarPanelState = &solarPanelState;
@@ -149,15 +125,32 @@ void setup() {
   cd.powerConsumption = &powerConsumption;
   cd.powerGeneration = &powerGeneration;
   randomSeed(analogRead(0));
+  // Set the task queue array' pointers to the correct functions
+  // and data for each task
+   fn[0].myTask = &powerSubsystem;
+   fn[0].taskDataPtr = &psd;
+   fn[1].myTask = &thrusterSubsystem;
+   fn[1].taskDataPtr = &td;
+   fn[2].myTask = &satelliteComs;
+   fn[2].taskDataPtr = &sd;
+   fn[3].myTask = &ConsoleDisplay;
+   fn[3].taskDataPtr = &cd;
+   fn[4].myTask = &WarningAlarm;
+   fn[4].taskDataPtr = &wd;
 }
 
 void loop() {
+  
 
-  delay(100);
-  powerSubsystem(psd);
-  satelliteComs(sd);
-  thrusterSubsystem(td);
-  WarningAlarm (wd);
-  ConsoleDisplay(cd);
+  delay(1000);
+  // Print statement to veriy board is updating
+  Serial.println("****");
+
+  // Delay between cycles is for minor cycle requirements
+   for (int i = 0; i < 4; i++) {
+      (fn[i].myTask)(fn[i].taskDataPtr);
+       delay(1000);
+      (fn[4].myTask)(fn[4].taskDataPtr);
+  }
   cycle++;
 }
