@@ -24,3 +24,5 @@ void solarPanelControl(void* c) {
 
   
 }
+
+// duty cycle will reflect speed

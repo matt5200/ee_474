@@ -4,13 +4,17 @@ typedef struct powerSubsystemData {
   bool* solarPanelDeploy;
   bool* solarPanelRetract;
   unsigned int* batteryLevelPtr;
-  //unsigned short* batteryLevel;
+  unsigned short* batteryLevel; //make inital level 36 rather than 100 (use power supply or battery and potentiometer 20 turn)
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
 } powerSubsystemData;
 
 int cycle;
 int reverse;
+
+// put this in main
+int buff[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int place = 0;
 
 void powerSubsystem(void* p);
 
@@ -69,19 +73,21 @@ void powerSubsystem(void* p) {
 
   // put pinMode(13, OUTPUT)
   // in setup in main
+  delayMicroseconds(600);
+  float voltage = analogRead(A13); // pin might be wrong, try 58 if its wrong
+  float converted = voltage * 5.0 / 1023.0; // 0-5V range
+  *batteryLevelPtr = floor(converted * 7.2); // 0-36V range
+  buff[place] = *batteryLevelPtr;
+  if (place == 15) {
+    place = 0;
+  } else {
+    place++;
+  }
   
+  *batteryLevel = *batteryLevelPtr * 100 / 36;
 
 
-
-
-
-
-
-
-
-
-
-
+  /*
   // Logic for updating the solar panel state
   if (*power->solarPanelState == false) {
     if (*power->batteryLevel >= (3 * *power->powerConsumption) ) {
@@ -103,5 +109,5 @@ void powerSubsystem(void* p) {
   }
     if (*power->batteryLevel > 100) {
         *power->batteryLevel = 100;
-      }
+      } */
 }
