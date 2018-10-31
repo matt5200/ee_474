@@ -1,3 +1,5 @@
+#include <TFT.h>
+
 // The following declerations are neccessary for the tft board to function
 // The code was also provided by the Elegoo company, https://www.elegoo.com/
 #include <TFT.h>
@@ -58,7 +60,7 @@ void ClearLine(int y_coord) {
 
 // Warning alarm function
 void WarningAlarm (void* d) {
-   
+  Serial.println("FUNCTION 5");
   warningAlarmData* data = (warningAlarmData*) d;
   // Set cursor to top right to print satellite status
   tft.setCursor(0, 0);
@@ -136,28 +138,27 @@ void WarningAlarm (void* d) {
 }
 
 void ConsoleDisplay( void* cdd) {
-    consoleDisplayData* data = (consoleDisplayData*) cdd;
+  Serial.println("FUNCTION 4");
+   consoleDisplayData* data = (consoleDisplayData*) cdd;
+    if (*data->fuelLow || *data->batteryLow) {
+       Serial.println("Battery Low :");
+    Serial.println(*data->batteryLow);
+    Serial.println("\n");
+    Serial.println("Fuel Level :");
+    Serial.println(*data->fuelLevel);
+    }
+    else {
     Serial.println("Panel State :");
     Serial.println(*data->solarPanelState);
     Serial.println("\n");
     Serial.println("Battery Level :");
     Serial.println(*data->batteryLevel);
     Serial.println("\n");
-    Serial.println("Fuel Low Status :");
-    Serial.println("\n");
-    Serial.println("Power Consumption :");
-    Serial.println(*data->powerConsumption);
-    Serial.println("\n");
-    Serial.println("Battery Low :");
-    Serial.println(*data->batteryLow);
-    Serial.println("\n");
-    Serial.println("Fuel Level :");
+    Serial.println("Fuel Level:");
     Serial.println(*data->fuelLevel);
     Serial.println("\n");
     Serial.println("Power Consumption :");
     Serial.println(*data->powerConsumption);
     Serial.println("\n");
-    Serial.println("Power Generation :");
-    Serial.println(*data->powerGeneration);
-    Serial.println("\n");
+    }
 }

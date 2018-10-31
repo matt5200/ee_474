@@ -1,52 +1,31 @@
 
 
-char* vehicleCommunicate(char command[] ) {
-  // Begin Communication
-  Serial1.write(36);
-  // Send command
-  Serial1.write(command, 3);
+char inByte;
 
-  Serial1.write(36);
+typedef struct vehicleCommsData {
+  char* command;
+  char* response;
+} vehicleCommsData;
 
-  char inChar;
-  char inputString[10];
-  bool start = false;
+void vehicleCommunicate(void* t );
 
-  // Looking for start
-  while (Serial1.available()) {
-    delay(300);
-    inChar = (char)Serial1.read();
-    // Find Start
-    if(inChar == '$') {
-      break;
-    }
+void vehicleCommunicate(void* t ) {
+   Serial.println("FUNCTION 7");
+   vehicleCommsData* vd = (vehicleCommsData*) t;
+    Serial1.print(*vd->command);
+    delay(10);
+
+    while (Serial1.available()) {
+    inByte = (char)Serial1.read();
+    *vd->response = inByte;
   }
-  Serial.println("ALOHA");
-  // Recieve Response
-  int index = 0;
- while (Serial1.available()) {
-    delay(300);
-    // get the new byte:
-    inChar = (char)Serial1.read();
-    // add it to the inputString:
-    inputString[index] = inChar;
-    index++;
-    // check for end
-    if(inChar == '$') {
-        break;
-    }
+  
+  if (*vd->response == *vd->command) {
+    Serial.println("I sucessfully recieved the following message");
+    Serial.println(*vd->response);
   }
-  int count = inputString[0];
-  // Ensure reciever had the same amount of bytes
-  //if (count != command.length()) {
-  //  return '0';
- // }
- String a;
-  for (int i = 0; i < index; i++) {
-    a+= inputString[i];
+  else {
+    Serial.println("Incorrect Message Recieved");
+     Serial.println(*vd->response);
   }
-  Serial.println(a);
-  Serial.println("ALOHA2");
-
-  return command;
 }

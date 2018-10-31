@@ -13,6 +13,7 @@ typedef struct satelliteComsData {
 void satelliteComs(void* s);
 
 void satelliteComs(void* s) {
+  Serial.println("FUNCTION 3");
   satelliteComsData* satelliteComs = (satelliteComsData*) s;
   // initialize the thruster direction commands
   unsigned short left = 0;
