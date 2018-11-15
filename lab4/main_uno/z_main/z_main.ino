@@ -23,7 +23,7 @@ void loop()
  Serial.print('T');
  inByte = (char)Serial.read();
   delay(2);
-  if (Serial.available()) {
+  if (Serial.available() > 0) {
     inByte = (char)Serial.read();
     }
   if((int)inByte > 64 ) {
@@ -34,7 +34,7 @@ void loop()
  Serial.print('D');
  inByte = (char)Serial.read();
   delay(2);
-  if (Serial.available()) {
+  if (Serial.available() > 0) {
     inByte = (char)Serial.read();
     }
   if((int)inByte > 64 ) {

@@ -22,7 +22,7 @@ while (Serial1.available()) {
     inByte = (char)Serial1.read();
     delay(2);
 
-   if (Serial1.available()) {
+   if (Serial1.available() > 0) {
     inByte = (char)Serial1.read();
     *vd->response = inByte;
   }
@@ -37,22 +37,24 @@ while (Serial1.available()) {
   }
 
 delay(2);
-  if (Serial1.available()) {
+  if (Serial1.available() > 0) {
     inByte = (char)Serial1.read();
     }
   if((int)inByte > 64 ) {
-  Serial.print((char)inByte); 
+  Serial.print("Did we receive T: ");
+  Serial.println((char)inByte); 
   Serial1.print('K');  
   inByte = (char)Serial1.read();
  }
 
 delay(2);
 
-  if (Serial1.available()) {
+  if (Serial1.available() > 0) {
     inByte = (char)Serial1.read();
     }
   if((int)inByte > 64 ) {
-  Serial.print((char)inByte); 
+  Serial.print("Did we receive D: ");
+  Serial.println((char)inByte); 
   Serial1.print('C');  
   inByte = (char)Serial1.read();
  }

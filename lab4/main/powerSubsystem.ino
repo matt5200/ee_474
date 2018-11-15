@@ -7,6 +7,8 @@ typedef struct powerSubsystemData {
   unsigned short* batteryLevel; //make inital level 36 rather than 100 (use power supply or battery and potentiometer 20 turn)
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
+  unsigned short* batteryOverTemperature; // newwww
+  unsigned short* batteryTemperature;     // newwww
 } powerSubsystemData;
 
 int cycle;
@@ -14,8 +16,10 @@ int reverse;
 bool endOfTravel;
 
 // put this in main
-int buff[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};;
+int buff[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int buffTemp[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // newwww
 int place;
+int placeTemp; // newwwwwwwwwwwww
 
 void powerSubsystem(void* p);
 
@@ -26,7 +30,7 @@ void powerSubsystem(void* p) {
     // put pinMode(A13, OUTPUT)
   // in setup in main
   delayMicroseconds(600);
-  float voltage = analogRead(A13); // pin might be wrong, try 58 if its wrong
+  float voltage = analogRead(A13); 
   float converted = voltage * 6.5 / 1023.0; // 0-5V range
   if (converted > 5) {
     converted = 5;
@@ -39,6 +43,24 @@ void powerSubsystem(void* p) {
   Serial.println(*power->batteryLevelPtr);
   Serial.println("PLACE");
   Serial.println(place);
+
+  // batteryTemperature ISSSS NOOOOOOOOOOOTTTTTTTTTT DDDDDDOOOOOONNNNNNNNNEEEEEE
+  if (*power->solarPanelState == 1) {
+    delayMicroseconds(600);
+    float temp = analogRead(A14);
+    float conv = temp * 3.25 / 1023.0;
+    if (conv > 3.25) {
+      conv = 3.25;
+    }
+    *power->batteryTemperature = 32*conv + 33;
+    buffTemp[placeTemp] = *power->batteryTemperature * 1000; // store in millivolts
+    if (placeTemp == 15) {
+      placeTemp = 0;
+    } else {
+      placeTemp++;
+    }
+  }
+  
   if (place == 15) {
     place = 0;
   } else {
