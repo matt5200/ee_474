@@ -48,9 +48,9 @@ void setup() {
 
   // Begin communication between board and computer
   Serial.begin(9600);
+  pinMode(25, OUTPUT);
   pinMode(A13, INPUT);
   pinMode(A12, INPUT);
-  pinMode(A11, OUTPUT);
   // Set booleans for battery and fuel flash to true
   batt_flash = true;
   fuel_flash = true;
