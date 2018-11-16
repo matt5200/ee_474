@@ -8,6 +8,16 @@ typedef struct vehicleCommsData {
 } vehicleCommsData;
 
 void vehicleCommunicate(void* t );
+void goodDelay();
+
+void goodDelay() {
+ while (!Serial1.available()) {
+ }
+if((int) Serial1.peek() < 64) {
+  Serial1.read();
+   goodDelay();
+ }
+}
 
 void vehicleCommunicate(void* t ) {
 
@@ -18,44 +28,60 @@ while (Serial1.available()) {
   
    Serial.println("FUNCTION 7");
    vehicleCommsData* vd = (vehicleCommsData*) t;
-    Serial1.print(*vd->command);
-    inByte = (char)Serial1.read();
-    delay(2);
-
-   if (Serial1.available() > 0) {
-    inByte = (char)Serial1.read();
+   Serial.print("Printed command was ->>> ");
+   Serial.println(*vd->command);
+   Serial1.println(*vd->command);
+   
+   // wait for response of previous char
+   goodDelay();
+   // get response
+   inByte = (char)Serial1.read();
     *vd->response = inByte;
-  }
-  
-  if (*vd->response == *vd->command) {
-    Serial.println("I sucessfully recieved the following message");
-    Serial.println(*vd->response);
-  }
-  else {
-    Serial.println("Incorrect Message Recieved");
-     Serial.println(*vd->response);
-  }
+   // print response
+   Serial.print("RECIEVED A ->>>  ");
+   Serial.println(*vd->response);
 
-delay(2);
-  if (Serial1.available() > 0) {
+   Serial.println("Waiting for T command... ");
+    // Should be waiting for a T
+    goodDelay();
+    // Get T
     inByte = (char)Serial1.read();
-    }
-  if((int)inByte > 64 ) {
-  Serial.print("Did we receive T: ");
-  Serial.println((char)inByte); 
-  Serial1.print('K');  
-  inByte = (char)Serial1.read();
- }
+    Serial.print("Command received was ->>> ");
+    Serial.println((char)inByte);
 
-delay(2);
-
-  if (Serial1.available() > 0) {
+    // Send a K command
+    Serial.println("Sending K command");
+    Serial1.print('K');
+    Serial1.read();
+    Serial.println("Waiting for confirmation of K....");
+    // Get rid of K in buffer
+    
+    // wait for confirmation of K being sent
+    goodDelay();
+    
+    // read in the K from vehicle
     inByte = (char)Serial1.read();
-    }
-  if((int)inByte > 64 ) {
-  Serial.print("Did we receive D: ");
-  Serial.println((char)inByte); 
-  Serial1.print('C');  
-  inByte = (char)Serial1.read();
- }
+    // print if we recieved a K from mining
+    Serial.print("Command received was ->>> ");
+    Serial.println(inByte);
+   
+    // Now there should be a D too
+    inByte = (char)Serial1.read();
+    // print the D
+    Serial.print("SHOULD RECIEVE A D ->>>> ");
+    Serial.println(inByte);
+
+     Serial.println("Sending C command");
+     Serial.println("Waiting for confirmation..");
+     // Send a C command
+     Serial1.print('C');
+     // Get rid of that last C command 
+     // wait for other board to confirm response
+     goodDelay();
+     // Now there should be a D too
+     inByte = (char)Serial1.read();
+     // print the C command
+     Serial.print("Command recieved was ->>> ");
+     Serial.println(inByte);
 }
+
