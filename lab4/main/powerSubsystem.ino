@@ -75,7 +75,7 @@ void powerSubsystem(void* p) {
       placeTemp++;
     }
     float bigger = max(*power->batteryTemperature, *power->batteryTemperature2);
-    if (bigger > 1.2 * comp1 || bigger > 1.2 * comp2) {
+    if (bigger > 1.2 * comp1 && bigger > 1.2 * comp2) {
       *power->batteryOverTemperature = true; 
     } else {
       *power->batteryOverTemperature = false; 
