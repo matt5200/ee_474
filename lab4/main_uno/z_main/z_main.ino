@@ -1,45 +1,56 @@
+
+
+void goodDelay();
+
+void goodDelay() {
+ while (!Serial.available()) {
+ }
+if((int) Serial.peek() < 64) {
+  Serial.read();
+   goodDelay();
+ }
+}
+
+
 void setup() {
   char inChar;
   Serial.begin(9600);
 }
-
 
  char inByte;
 
 
 void loop()
 {
-
-
-  delay(1);
-  while (Serial.available()) {
-    inByte = (char)Serial.read();
-    }
-  if((int)inByte > 64 ) {
-  Serial.print((char)inByte);  
+  delay(.1);
+  // wait for command
+  goodDelay();
+  // print back command
   inByte = (char)Serial.read();
- }
-
- Serial.print('T');
- inByte = (char)Serial.read();
-  delay(2);
-  if (Serial.available() > 0) {
-    inByte = (char)Serial.read();
-    }
-  if((int)inByte > 64 ) {
   Serial.print((char)inByte);  
+  // get rid of that previous char
   inByte = (char)Serial.read();
- }
- 
- Serial.print('D');
- inByte = (char)Serial.read();
-  delay(2);
-  if (Serial.available() > 0) {
-    inByte = (char)Serial.read();
-    }
-  if((int)inByte > 64 ) {
+  delay(.1);
+  // send d Command
+  Serial.print('T');
+  // get rid of that previous char
+  inByte = (char)Serial.read();
+  // wait for response
+  goodDelay();
+  // should recieve a K
+  inByte = (char)Serial.read();
   Serial.print((char)inByte);  
+  // get rid of that char you just printed
   inByte = (char)Serial.read();
- }
- 
+  // send D command
+  Serial.print('D');
+  // get rid of that char
+  inByte = (char)Serial.read();
+  // wait for C response
+  goodDelay();
+  inByte = (char)Serial.read();
+  // print that C
+  Serial.print((char)inByte);  
+  // get rid of dat C
+  inByte = (char)Serial.read();
 }
