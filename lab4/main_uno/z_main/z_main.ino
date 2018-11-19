@@ -11,7 +11,6 @@ if((int) Serial.peek() < 64) {
  }
 }
 
-
 void setup() {
   char inChar;
   Serial.begin(9600);

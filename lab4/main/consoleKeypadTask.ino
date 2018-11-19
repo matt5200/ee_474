@@ -21,5 +21,8 @@ void consoleKeypadTask(void* c) {
       *consoleKeypadTask->driveMotorSpeedDec = false;
       break;
     }
+    else if(val == 'a') {
+      ack = true;
+    }
   }
 }

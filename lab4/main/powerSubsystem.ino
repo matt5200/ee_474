@@ -4,11 +4,11 @@ typedef struct powerSubsystemData {
   bool* solarPanelDeploy;
   bool* solarPanelRetract;
   unsigned int* batteryLevelPtr;
-  unsigned short* batteryLevel; //make inital level 36 rather than 100 (use power supply or battery and potentiometer 20 turn)
+  unsigned short* batteryLevel;
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
-  bool* batteryOverTemperature; // newwww
-  unsigned short* batteryTemperature;     // newwww
+  bool* batteryOverTemperature; 
+  unsigned short* batteryTemperature; 
   unsigned short* batteryTemperature2;
 } powerSubsystemData;
 
@@ -18,7 +18,7 @@ bool endOfTravel;
 
 // put this in main
 int buff[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int buffTemp[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // newwww
+int buffTemp[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; 
 int place;
 int placeTemp; // newwwwwwwwwwwww
 
@@ -46,7 +46,7 @@ void powerSubsystem(void* p) {
   Serial.println(place);
 
   // batteryTemperature ISSSS NOOOOOOOOOOOTTTTTTTTTT DDDDDDOOOOOONNNNNNNNNEEEEEE
-  if (*power->solarPanelState == 1) {
+  if (*power->solarPanelState == true) {
     delayMicroseconds(600);
     float temp = analogRead(A14);
     float conv = temp * 3.25 / 1023.0;
@@ -58,10 +58,18 @@ void powerSubsystem(void* p) {
     if (conv2 > 3.25) {
       conv2 = 3.25;
     }
+    Serial.print("Battery Temp1: ");
+    Serial.println(conv);
+    Serial.print("Battery Temp2: ");
+    Serial.println(conv2);
     float comp1 = *power->batteryTemperature;
     float comp2 = *power->batteryTemperature2;
     *power->batteryTemperature = 32*conv + 33;
     *power->batteryTemperature2 = 32*conv2 + 33;
+     Serial.print("Battery Temp1 eq: ");
+    Serial.println(*power->batteryTemperature);
+    Serial.print("Battery Temp2 eq: ");
+    Serial.println(*power->batteryTemperature2);
     buffTemp[placeTemp] = *power->batteryTemperature * 1000; // store in millivolts
     if (placeTemp == 15) {
       placeTemp = 0;

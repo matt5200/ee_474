@@ -32,13 +32,16 @@ typedef struct consoleDisplayData{
   bool *fuelLow;
   bool *batteryLow;
   bool *solarPanelState;
+  float *transportDist;
 } consoleDisplayData;
+
 // Struct containing all data relevant to warning alarm system
 typedef struct warningAlarmData{ 
   float *fuelLevel;
   unsigned  short *batteryLevel;
   bool *fuelLow;
   bool *batteryLow;
+  bool *batteryOverTemperature;
 } warningAlarmData;
 
 void ConsoleDisplay(void* cdd);
@@ -46,8 +49,15 @@ void WarningAlarm (void* d);
 void ClearLine(int y_coord);
 
 bool batt_flash;
+bool batt_flash_two;
 bool fuel_flash;
 bool fuel_flash_two;
+int timer;
+int timer2;
+int timer3;
+bool flashTemp;
+bool flashing;
+bool ack;
 
 // Function to clear a line of the tft display
 void ClearLine(int y_coord) {
@@ -66,75 +76,129 @@ void WarningAlarm (void* d) {
   tft.setCursor(0, 0);
   tft.setTextColor(WHITE); 
   tft.print("Satellite Status");
-    
    tft.setCursor(0, 15);
+  while(Serial.available () > 0 ) {
+    if(Serial.read() == 'a'){
+      ack = true;
+    }
+  }
+ if (!*data->batteryOverTemperature || ack) {
+     timer3 = 0;
+     tft.setCursor(0, 45);
+     ClearLine(45);
+   }
+   else if(*data->batteryOverTemperature && timer3 < 150) {
+   timer3++;
+   tft.setCursor(0, 45);
+   tft.setTextColor(RED); 
+   tft.print("TEMPERATURE");
+   }
+   else  {
+     if (timer3 % 50 == 0)  {
+      if (flashTemp){
+        flashTemp = false;
+      }
+      else {
+         flashTemp = true;
+      }
+      }
+      timer3++;
+   if (flashTemp) {
+   if(flashing) {
+   ClearLine(45);
+   flashing = false;
+   }
+   else {
+   tft.setCursor(0, 45);
+   tft.setTextColor(RED); 
+   tft.print("TEMPERATURE");
+   flashing = true;
+    }
+  }
+   else {
+    tft.setCursor(0, 45);
+   tft.setTextColor(RED); 
+   tft.print("TEMPERATURE");
+   flashing = false;
+  }
+ }
+   
+    tft.setCursor(0, 15);
    // Following is logic for determing fuel print state
    if ( *data->fuelLevel > 50) {
+    timer = 0;
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
    else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
-    if (fuel_flash == true) {
-      if (fuel_flash_two == true) {
-      ClearLine(15);
-      fuel_flash = false;
-      fuel_flash_two = false;
-      }
-    else {
-      fuel_flash_two = true;
-      }
+    if(timer % 10 == 0 ) {
+      if (batt_flash) {
+        ClearLine(15);
+        batt_flash = false;
     }
     else {
-      fuel_flash = true;
+       tft.setCursor(0, 15);
       tft.setTextColor(ORANGE);
       tft.print("FUEL\n");
+      batt_flash = true;
     }
+   }
+    timer++;
    }
    else {
-      if (fuel_flash == true) {
-      if (fuel_flash_two == true) {
-      ClearLine(15);
-      fuel_flash = false;
-      fuel_flash_two = false;
-      }
+      if(timer % 10 == 0 ) {
+      if (batt_flash) {
+        ClearLine(15);
+        batt_flash = false;
+    }
     else {
-      fuel_flash_two = true;
-      }
-   }
-    else {
-      fuel_flash = true;
+      tft.setCursor(0, 15);
       tft.setTextColor(RED);
       tft.print("FUEL\n");
+      batt_flash = true;
     }
    }
+   timer++;
+   }
+
+
+   tft.setCursor(0, 30);
+   // Following is logic for determing fuel print state
+   if ( *data->batteryLevel > 50) {
+    timer2 = 0;
+    tft.setTextColor(GREEN); 
+    tft.print("BATTERY");
+    }
+   else if ( *data->batteryLevel <= 50 && *data->batteryLevel > 10) {
+    if(timer2 % 5 == 0 ) {
+      if (batt_flash_two) {
+        ClearLine(30);
+        batt_flash_two = false;
+    }
+    else {
        tft.setCursor(0, 30);
-   // Following is logic for determing battery print state
-   if (*data->batteryLevel > 50) {
-    tft.setTextColor(GREEN);
-    tft.print("BATTERY\n");
+      tft.setTextColor(ORANGE);
+      tft.print("BATTERY\n");
+      batt_flash_two = true;
     }
-   else if (*data->batteryLevel <= 50 && *data->batteryLevel > 10) {
-    if (batt_flash == true) {
-      ClearLine(30);
-      batt_flash = false; 
-    }
-    else {
-    batt_flash = true; 
-    tft.setTextColor(ORANGE); ;
-    tft.print("BATTERY\n");
-    }
-  }
-  else {
-   if (batt_flash == true) {
-      ClearLine(30);
-      batt_flash = false;
+   }
+   timer2++;
+   }
+   else {
+      if(timer2 % 5 == 0 ) {
+      if (batt_flash_two) {
+        ClearLine(30);
+        batt_flash_two = false;
     }
     else {
-    batt_flash = true;
-    tft.setTextColor(RED); 
-    tft.print("BATTERY\n");
+      tft.setCursor(0, 30);
+      tft.setTextColor(RED);
+      tft.print("BATTEREY\n");
+      batt_flash_two = true;
     }
- }
+   }
+   timer2++;
+   }
 }
 
 void ConsoleDisplay( void* cdd) {

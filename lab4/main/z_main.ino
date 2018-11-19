@@ -15,10 +15,14 @@ char response;
 char command;
 int currCommand;
 long globalCount;
-
+bool batteryOverTemperature; 
+unsigned short batteryTemperature;
+unsigned short batteryTemperature2;
 bool batteryIsValid;
 bool travelFlag;
 bool stable;
+float transportDist;
+
 
 powerSubsystemData psd;
 satelliteComsData sd;
@@ -28,6 +32,7 @@ warningAlarmData wd;
 solarPanelControlData spd;
 consoleKeypadData  ckd;
 vehicleCommsData vcd;
+transportDistanceData tpd;
 
 TCB a;
 TCB b;
@@ -38,21 +43,35 @@ TCB e;
 TCB f;
 // Console Key Pad
 TCB h;
+// transport distance
+TCB k;
+// battery Temp
+TCB l;
 
 NodeTCB* front = NULL; 
 NodeTCB* back = NULL;
 char arrCommands [7] = {'F','B','L','R','D','H'};
 
 void setup() {
-
-
+  ack = false;
+  timer = 0;
+  timer2 = 0;
+  timer3= 0;
+  transportDist = 2000;
+  placeTime= 0;
+  placeDist= 0;
+  placeholder= 7;  // initialize to 7 in main
+  distanceDone= true;
   // Begin communication between board and computer
   Serial.begin(9600);
   pinMode(25, OUTPUT);
   pinMode(A13, INPUT);
   pinMode(A12, INPUT);
+  pinMode(A14, INPUT);
+  pinMode(A15, INPUT);
   // Set booleans for battery and fuel flash to true
   batt_flash = true;
+  batt_flash_two = true;
   fuel_flash = true;
   fuel_flash_two = true;
   endOfTravel = false;
@@ -63,6 +82,7 @@ void setup() {
   batt_flash = true;
   fuel_flash = true;
   fuel_flash_two = true;
+  placeTemp = 0;
 
   // The following code is for the TFT display
   #ifdef USE_Elegoo_SHIELD_PINOUT
@@ -112,28 +132,31 @@ void setup() {
   }
   tft.begin(identifier);
   tft.fillScreen(BLACK);
-
-
+  flashTemp = true;
   motorComplete = false;
   solarPanelState = false;
-  batteryLevel = 100;
+  batteryLevel = 8;
   powerConsumption = 0;
   powerGeneration = 0;
   cycle = 1;
   reverse = 0;
   fuelLow = false;
   batteryLow = false;
-  fuelLevel = 100;
+  fuelLevel = 8;
   thrusterCommand = 0;
   currentLength = 0;
   solarPanelDeploy = false;
   solarPanelRetract = false;
+  batteryOverTemperature= true;
   batteryLevelPtr= buff[0];
+  flashing = true;
   place = 0;
   driveMotorSpeedInc = false;
   driveMotorSpeedDec = false;
   rate = .5;
   currCommand = 0;
+  batteryTemperature= 0;
+  batteryTemperature2= 0;
   command = arrCommands[currCommand];
   // Set the struct pointers for the power subsystem
   psd.solarPanelState = &solarPanelState;
@@ -141,6 +164,9 @@ void setup() {
   psd.batteryLevelPtr = &batteryLevelPtr;
   psd.powerConsumption = &powerConsumption;
   psd.powerGeneration = &powerGeneration;
+  psd.batteryOverTemperature= &batteryOverTemperature; 
+  psd.batteryTemperature= &batteryTemperature;
+  psd.batteryTemperature2= &batteryTemperature2;
   
   // Set the struct pointers for the satellite comms
   sd.fuelLow = &fuelLow;
@@ -155,12 +181,16 @@ void setup() {
   // Set the struct pointers for the thruster system
   td.fuelLevel = &fuelLevel;
   td.thrusterCommand = &thrusterCommand;
+
+  // transport distance
+  tpd.transportDist = &transportDist;
    
   // Set the struct pointers for the warning data
   wd.batteryLow = &batteryLow; 
   wd.fuelLevel = &fuelLevel;
   wd.fuelLow = &batteryLow; 
   wd.batteryLevel = &batteryLevel;
+  wd.batteryOverTemperature = &batteryOverTemperature;
  
   // Set the struct pointers for the console display data.
   cd.fuelLow = &fuelLow;
@@ -170,6 +200,7 @@ void setup() {
   cd.batteryLevel = &batteryLevel;
   cd.powerConsumption = &powerConsumption;
   cd.powerGeneration = &powerGeneration;
+  cd.transportDist = &transportDist;
 
   // Initialize all console keypad data
   ckd.driveMotorSpeedInc = &driveMotorSpeedInc;
@@ -204,68 +235,33 @@ void setup() {
   g.taskDataPtr = &ckd;
   h.myTask = &vehicleCommunicate;
   h.taskDataPtr= &vcd;
+  k.taskDataPtr = &tpd;
+  k.myTask = &transportDistance;
+  l.taskDataPtr = &psd;
+  l.myTask = &batteryTemp;
 
   Serial.println("STARTUP PROCEDURE RUNNING");
   Serial.println("ALL SYSTEM TASKS SHALL BE RUN...");
   delay(100);
 
    // Run All TCBS
-   (a.myTask)(a.taskDataPtr);
-   (b.myTask)(b.taskDataPtr);
-   (c.myTask)(c.taskDataPtr);
-   (d.myTask)(d.taskDataPtr);
-   (e.myTask)(e.taskDataPtr);
-   (f.myTask)(f.taskDataPtr);
-   (g.myTask)(g.taskDataPtr);
-   (h.myTask)(h.taskDataPtr);
+   //(a.myTask)(a.taskDataPtr);
+ //  (b.myTask)(b.taskDataPtr);
+ //  (c.myTask)(c.taskDataPtr);
+ //  (d.myTask)(d.taskDataPtr);
+  // (e.myTask)(e.taskDataPtr);
+  // (f.myTask)(f.taskDataPtr);
+ //  (g.myTask)(g.taskDataPtr);
+  // (h.myTask)(h.taskDataPtr);
 
    insert(&front, &back, &b); 
    insert(&front, &back, &c);
    insert(&front, &back, &d);
-   insert(&front, &back, &e);
+   //insert(&front, &back, &e);
 //   insert(&front, &back, &f);
    insert(&front, &back, &h);
    insert(&front, &back, &a);
-   // Delete From Beginning Test
-   /*deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-   deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-   deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-    deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-    deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-    deleteNode( &front, &back, 0);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);*/
-
-    // Delete From End
-   /*deleteNode( &front, &back, 6);
-   (getN(&front, &back, 5)->myTask)(getN(&front, &back, 5)->taskDataPtr);
-   deleteNode( &front, &back, 5);
-   (getN(&front, &back, 4)->myTask)(getN(&front, &back, 4)->taskDataPtr);
-   deleteNode( &front, &back, 4);
-   (getN(&front, &back, 3)->myTask)(getN(&front, &back, 3)->taskDataPtr);
-    deleteNode( &front, &back, 3);
-   (getN(&front, &back, 2)->myTask)(getN(&front, &back, 2)->taskDataPtr);
-    deleteNode( &front, &back, 2);
-   (getN(&front, &back, 1)->myTask)(getN(&front, &back, 1)->taskDataPtr);
-    deleteNode( &front, &back, 1);
-   (getN(&front, &back, 0)->myTask)(getN(&front, &back, 0)->taskDataPtr);
-   deleteNode( &front, &back, 0);
-   if (front == NULL && back == NULL) {
-      Serial.println("Linked list is gone");
-   }*/
-
-    // Delete From elsewhere
-   /*deleteNode( &front, &back, 2);
-   (getN(&front, &back, 2)->myTask)(getN(&front, &back, 2)->taskDataPtr);
-   deleteNode( &front, &back, 4);
-   (getN(&front, &back, 4)->myTask)(getN(&front, &back, 4)->taskDataPtr);
-    deleteNode( &front, &back, 4);
-    */
-
+   insert(&front, &back, &k);
   delay(1000);
   Serial.println("END OF STARTUP...");
 
@@ -278,12 +274,12 @@ void loop() {
  // Serial.println(arrCommands[currCommand]);
   command = arrCommands[currCommand];
   currCommand++;
-   (h.myTask)(h.taskDataPtr);
-
+//  (k.myTask)(k.taskDataPtr);
+// (a.myTask)(a.taskDataPtr);
   if (currCommand == 6) {
     currCommand = 0;
-  }
-/*  for (int i = 0; i < currentLength; i++) {
+  }/*
+  for (int i = 0; i < currentLength; i++) {
        delay(800);
        if (analogRead(A12)*5/1023 > .1) {
         stable = true;
@@ -295,9 +291,6 @@ void loop() {
        Serial.print("STABLE: ");
        Serial.println(stable);
        (getN(&front, &back, i)->myTask)(getN(&front, &back, i)->taskDataPtr);
-        if (i!=3) {
-       (getN(&front, &back, 3)->myTask)(getN(&front, &back, 3)->taskDataPtr); 
-        }
        Serial.print("END OF TRAVEL: ");
        Serial.println(endOfTravel);
        if (endOfTravel) {
@@ -306,6 +299,24 @@ void loop() {
         (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
          deleteNode(&front, &back, currentLength - 1);
     }
+
+  insert(&front, &back, &e);
+  for (int i = 0; i < 50; i++) {
+    delay(100);
+    for (int i = 0; i < 200; i++) {
+      if (solarPanelState && timer5 % 50 == 0) {
+        insert(&front, &back, &l);
+        endOfTravel = false;
+        (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+         deleteNode(&front, &back, currentLength - 1);
+    }
+    }
+    (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
   }
-  cycle++;*/
+  if(ack) {
+    batteryOverTemperature = false;
+    ack = false;
+  }
+  deleteNode(&front, &back, currentLength - 1);
+  cycle++;
 }
