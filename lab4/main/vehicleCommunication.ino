@@ -1,5 +1,8 @@
+NodeTCB* front = NULL; 
+NodeTCB* back = NULL;
 
-
+// transport distance
+TCB k;
 char inByte;
 
 typedef struct vehicleCommsData {
@@ -13,7 +16,7 @@ void goodDelay();
 void goodDelay() {
  while (!Serial1.available()) {
  }
-if((int) Serial1.peek() < 64) {
+  if((int) Serial1.peek() < 64) {
   Serial1.read();
    goodDelay();
  }
@@ -30,7 +33,8 @@ while (Serial1.available()) {
    vehicleCommsData* vd = (vehicleCommsData*) t;
    Serial.print("Printed command was ->>> ");
    Serial.println(*vd->command);
-   Serial1.println(*vd->command);
+   Serial1.print(*vd->command);
+   Serial1.read();
    
    // wait for response of previous char
    goodDelay();
@@ -64,7 +68,11 @@ while (Serial1.available()) {
     // print if we recieved a K from mining
     Serial.print("Command received was ->>> ");
     Serial.println(inByte);
-   
+
+   insert(&front, &back, &k);
+   (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+   deleteNode(&front, &back, currentLength - 1);
+    
     // Now there should be a D too
     inByte = (char)Serial1.read();
     // print the D
@@ -84,4 +92,3 @@ while (Serial1.available()) {
      Serial.print("Command recieved was ->>> ");
      Serial.println(inByte);
 }
-

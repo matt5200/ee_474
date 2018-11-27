@@ -43,16 +43,15 @@ TCB e;
 TCB f;
 // Console Key Pad
 TCB h;
-// transport distance
-TCB k;
 // battery Temp
 TCB l;
+TCB m;
 
-NodeTCB* front = NULL; 
-NodeTCB* back = NULL;
+
 char arrCommands [7] = {'F','B','L','R','D','H'};
 
 void setup() {
+  placeTime2 = 0;
   ack = false;
   timer = 0;
   timer2 = 0;
@@ -65,8 +64,9 @@ void setup() {
   // Begin communication between board and computer
   Serial.begin(9600);
   pinMode(25, OUTPUT);
-  pinMode(A13, INPUT);
+  pinMode(A11, INPUT);
   pinMode(A12, INPUT);
+  pinMode(A13, INPUT);
   pinMode(A14, INPUT);
   pinMode(A15, INPUT);
   // Set booleans for battery and fuel flash to true
@@ -135,19 +135,19 @@ void setup() {
   flashTemp = true;
   motorComplete = false;
   solarPanelState = false;
-  batteryLevel = 8;
+  batteryLevel = 100;
   powerConsumption = 0;
   powerGeneration = 0;
   cycle = 1;
   reverse = 0;
   fuelLow = false;
   batteryLow = false;
-  fuelLevel = 8;
+  fuelLevel = 100;
   thrusterCommand = 0;
   currentLength = 0;
   solarPanelDeploy = false;
   solarPanelRetract = false;
-  batteryOverTemperature= true;
+  batteryOverTemperature= false;
   batteryLevelPtr= buff[0];
   flashing = true;
   place = 0;
@@ -239,48 +239,48 @@ void setup() {
   k.myTask = &transportDistance;
   l.taskDataPtr = &psd;
   l.myTask = &batteryTemp;
-
+  void* in;
+  m.myTask = imageCapture;
+  m.taskDataPtr = in;
+  
   Serial.println("STARTUP PROCEDURE RUNNING");
   Serial.println("ALL SYSTEM TASKS SHALL BE RUN...");
   delay(100);
 
    // Run All TCBS
-   //(a.myTask)(a.taskDataPtr);
- //  (b.myTask)(b.taskDataPtr);
- //  (c.myTask)(c.taskDataPtr);
- //  (d.myTask)(d.taskDataPtr);
-  // (e.myTask)(e.taskDataPtr);
-  // (f.myTask)(f.taskDataPtr);
- //  (g.myTask)(g.taskDataPtr);
-  // (h.myTask)(h.taskDataPtr);
+   (a.myTask)(a.taskDataPtr);
+   (b.myTask)(b.taskDataPtr);
+   (c.myTask)(c.taskDataPtr);
+   (d.myTask)(d.taskDataPtr);
+   (e.myTask)(e.taskDataPtr);
+   (f.myTask)(f.taskDataPtr);
+   //(g.myTask)(g.taskDataPtr);
+   //(h.myTask)(h.taskDataPtr);
 
    insert(&front, &back, &b); 
    insert(&front, &back, &c);
    insert(&front, &back, &d);
+   //Commented out due to structure change
    //insert(&front, &back, &e);
-//   insert(&front, &back, &f);
+   //insert(&front, &back, &f);
    insert(&front, &back, &h);
    insert(&front, &back, &a);
-   insert(&front, &back, &k);
-  delay(1000);
-  Serial.println("END OF STARTUP...");
-
- int initial = 0;
+   //insert(&front, &back, &k);
+   delay(1000);
+   Serial.println("END OF STARTUP...");
+   int initial = 0;
 }
 
 void loop() {
-   globalCount = millis();
+  globalCount = millis();
   delay(100);
- // Serial.println(arrCommands[currCommand]);
   command = arrCommands[currCommand];
   currCommand++;
-//  (k.myTask)(k.taskDataPtr);
-// (a.myTask)(a.taskDataPtr);
   if (currCommand == 6) {
     currCommand = 0;
-  }/*
+  }
+  
   for (int i = 0; i < currentLength; i++) {
-       delay(800);
        if (analogRead(A12)*5/1023 > .1) {
         stable = true;
        }
@@ -299,24 +299,36 @@ void loop() {
         (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
          deleteNode(&front, &back, currentLength - 1);
     }
+     insert(&front, &back, &e);
+    (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+     deleteNode(&front, &back, currentLength - 1);
+  }
+  
+  if(ack == true) {
+    batteryOverTemperature = false;
+    ack = false;
+  }
+     insert(&front, &back, &m);
+     (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+     deleteNode(&front, &back, currentLength - 1);
+ 
 
-  insert(&front, &back, &e);
-  for (int i = 0; i < 50; i++) {
-    delay(100);
-    for (int i = 0; i < 200; i++) {
-      if (solarPanelState && timer5 % 50 == 0) {
+
+      if (solarPanelState ) {
         insert(&front, &back, &l);
         endOfTravel = false;
         (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
          deleteNode(&front, &back, currentLength - 1);
     }
-    }
+        insert(&front, &back, &e);
     (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
-  }
-  if(ack) {
+     deleteNode(&front, &back, currentLength - 1);
+
+  
+  if(ack == true) {
     batteryOverTemperature = false;
     ack = false;
   }
-  deleteNode(&front, &back, currentLength - 1);
+ // deleteNode(&front, &back, currentLength - 1);
   cycle++;
-}
+  }

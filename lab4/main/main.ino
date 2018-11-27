@@ -1,3 +1,4 @@
+
 #include <TFT.h>
 
 // The following declerations are neccessary for the tft board to function
@@ -59,7 +60,7 @@ bool flashTemp;
 bool flashing;
 bool ack;
 
-// Function to clear a line of the tft display
+ //Function to clear a line of the tft display
 void ClearLine(int y_coord) {
   for (int x = 0; x < 80; x++) {
     for (int y = y_coord; y < y_coord + 8; y++) {
@@ -68,9 +69,11 @@ void ClearLine(int y_coord) {
   }
 }
 
-// Warning alarm function
+ //Warning alarm function
 void WarningAlarm (void* d) {
   Serial.println("FUNCTION 5");
+for (int i = 0; i < 50; i++) {
+  delay(100);
   warningAlarmData* data = (warningAlarmData*) d;
   // Set cursor to top right to print satellite status
   tft.setCursor(0, 0);
@@ -82,10 +85,12 @@ void WarningAlarm (void* d) {
       ack = true;
     }
   }
- if (!*data->batteryOverTemperature || ack) {
+
+ if (*data->batteryOverTemperature == false || ack) {
      timer3 = 0;
      tft.setCursor(0, 45);
-     ClearLine(45);
+        tft.setTextColor(BLACK);
+        tft.print("TEMPERATURE");
    }
    else if(*data->batteryOverTemperature && timer3 < 150) {
    timer3++;
@@ -124,16 +129,17 @@ void WarningAlarm (void* d) {
  }
    
     tft.setCursor(0, 15);
-   // Following is logic for determing fuel print state
+  //  Following is logic for determing fuel print state
    if ( *data->fuelLevel > 50) {
     timer = 0;
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
    else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
-    if(timer % 10 == 0 ) {
+    if(timer % 20 == 0 ) {
       if (batt_flash) {
-        ClearLine(15);
+        tft.setTextColor(BLACK);
+        tft.print("FUEL");
         batt_flash = false;
     }
     else {
@@ -146,9 +152,10 @@ void WarningAlarm (void* d) {
     timer++;
    }
    else {
-      if(timer % 10 == 0 ) {
+      if(timer % 20 == 0 ) {
       if (batt_flash) {
-        ClearLine(15);
+        tft.setTextColor(BLACK);
+        tft.print("FUEL");
         batt_flash = false;
     }
     else {
@@ -163,16 +170,17 @@ void WarningAlarm (void* d) {
 
 
    tft.setCursor(0, 30);
-   // Following is logic for determing fuel print state
+  //  Following is logic for determing fuel print state
    if ( *data->batteryLevel > 50) {
     timer2 = 0;
     tft.setTextColor(GREEN); 
     tft.print("BATTERY");
     }
    else if ( *data->batteryLevel <= 50 && *data->batteryLevel > 10) {
-    if(timer2 % 5 == 0 ) {
+    if(timer2 % 10 == 0 ) {
       if (batt_flash_two) {
-        ClearLine(30);
+        tft.setTextColor(BLACK); 
+         tft.print("BATTERY");
         batt_flash_two = false;
     }
     else {
@@ -185,20 +193,23 @@ void WarningAlarm (void* d) {
    timer2++;
    }
    else {
-      if(timer2 % 5 == 0 ) {
+      if(timer2 % 10 == 0 ) {
       if (batt_flash_two) {
-        ClearLine(30);
+         tft.setTextColor(BLACK); 
+         tft.print("BATTERY");
         batt_flash_two = false;
     }
     else {
       tft.setCursor(0, 30);
       tft.setTextColor(RED);
-      tft.print("BATTEREY\n");
+      tft.print("BATTERY\n");
       batt_flash_two = true;
     }
    }
    timer2++;
    }
+
+}
 }
 
 void ConsoleDisplay( void* cdd) {

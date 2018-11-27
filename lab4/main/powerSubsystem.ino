@@ -88,6 +88,8 @@ void powerSubsystem(void* p) {
     } else {
       *power->batteryOverTemperature = false; 
     }
+    Serial.print("Battery Over Temp");
+    Serial.println(*power->batteryOverTemperature);
   }
   
   if (place == 15) {
