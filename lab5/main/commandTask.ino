@@ -1,27 +1,56 @@
 // Command Task
 
+typedef struct commandTaskData {
+ char* validTasks;
+ char task;
+} commandTaskData;
+
+void commandTask(void* c);
+
+char* validTasks = {'S','P','D','T','M','A','E'};
+
 /*
-Command
-The command function shall accept a pointer to void with a return of void.
-The pointer in the task argument will be re-cast as a pointer to the command task’s data
-structure type before it can be dereferenced.
 The task shall be scheduled whenever a command has been received by the system or
 when an outgoing message must be formatted in preparation for transmission to the
 remote computer.
 */
 
+void commandTask(void* c) {
+  Serial.println("FUNCTION Command Task");
+  commandTaskData* ctd = (commandTaskData*) c;
+  bool validCommand = false;
+  /*
+    Receive
+    When a command has been received by the system, the task must verify that the
+    received message is valid. If valid, it is acted upon;
+  */
+      for (int i = 0; i < ctd.validTasks.length; i++) {
+        if (ctd.task == c[i]) {
+          validCommand = true;
+        }
+      }
+  
+  // if invalid, an error response must be sent to the SatelliteComms task.
+  if (!validCommand) {
+  }
+  if (ctd->task == 'S') {
+  }
+  else if (ctd->task == 'P') {
+  }
+  else if(ctd->task == 'D') {
+  }
+  else if(ctd->task == 'T') {
+  }
+  else if(ctd->task == 'M') {
+  }
 /*
-Receive
-When a command has been received by the system, the task must verify that the
-received message is valid. If valid, it is acted upon; if invalid, an error response must
-be sent to the SatelliteComms task.
-The legal commands and their interpretation are specified in Appendix C.
 Transmit
 When a message is to be transmitted, the Command task must build the message
 body. The message body is then sent to the SatelliteComms task for transmission.
 After the message has been interpreted and verified as correct or an outgoing message has
 been built and forwarded to the SatelliteComms task, the Command task shall be deleted
 */
+  
 
 /*
 
