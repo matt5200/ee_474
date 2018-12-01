@@ -1,5 +1,6 @@
 // Struct containing all data for the satellite data
 typedef struct satelliteComsData {
+  char earthCommand;
   bool* fuelLow;
   bool* batteryLow;
   bool* solarPanelState;
@@ -15,6 +16,10 @@ void satelliteComs(void* s);
 void satelliteComs(void* s) {
   Serial.println("FUNCTION 3");
   satelliteComsData* satelliteComs = (satelliteComsData*) s;
+  
+  // Send earth command to command task
+  commandTaskData->earthCommand = s->earthCommand;
+  if (satelliteComs->earthCommand = 'T') {
   // initialize the thruster direction commands
   unsigned short left = 0;
   unsigned short right = 0;
@@ -52,5 +57,5 @@ void satelliteComs(void* s) {
   // Generate thruster control commands
   int magnitude[4] = {binary[8], binary[9], binary[10], binary[11]};
   int duration[8] = {binary[0], binary[1], binary[2], binary[3], binary[4], binary[5], binary[6], binary[7]};
- 
+    }
  }
