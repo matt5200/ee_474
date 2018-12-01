@@ -15,8 +15,6 @@ typedef struct commandTaskData {
 
 void commandTask(void* c);
 
-char* validTasks = {'S','P','D','T','M','A','E'};
-
 /*
 The task shall be scheduled whenever a command has been received by the system or
 when an outgoing message must be formatted in preparation for transmission to the
@@ -27,13 +25,14 @@ void commandTask(void* c) {
   Serial.println("FUNCTION Command Task");
   commandTaskData* ctd = (commandTaskData*) c;
   bool validCommand = false;
-  /*
+  
+ /*
     Receive
     When a command has been received by the system, the task must verify that the
     received message is valid. If valid, it is acted upon;
   */
       for (int i = 0; i < ctd.validTasks.length; i++) {
-        if (ctd.task == c[i]) {
+        if (ctd.task == "S" || ctd.task == "P" || ctd.task == "D" || ctd.task == "M") {
           validCommand = true;
         }
       }
@@ -43,6 +42,12 @@ void commandTask(void* c) {
   }
   if (ctd->task == 'S') {
    runTasks = true;
+   (a.myTask)(a.taskDataPtr);
+   (b.myTask)(b.taskDataPtr);
+   (c.myTask)(c.taskDataPtr);
+   (d.myTask)(d.taskDataPtr);
+   (e.myTask)(e.taskDataPtr);
+   (f.myTask)(f.taskDataPtr);
   }
  else {
  runTasks = false;
@@ -53,13 +58,25 @@ void commandTask(void* c) {
  else {
    stopTasks = false;
  }
+ // Remove all information from TFT display
   if(ctd->task == 'D') {
    displayOff = true;
+   tft.clear();
+   /*tft.setCursor(0, 30);
+   tft.setTextColor(BLACK); 
+   tft.print("BATTERY");
+   tft.setCursor(0, 45);
+   tft.print("TEMPERATURE");
+   tft.setCursor(0, 15);
+   tft.print("FUEL");
+   tft.setCursor(0, 0);
+   tft.print("Satellite Status");*/
   }
   else {
    displayOff = false;
   }
  
+}
   // It will format any requested data to be sent by the Satellite Comms task over the
   // network to the remote system. 
   /*unsigned  short *batteryLevel;
