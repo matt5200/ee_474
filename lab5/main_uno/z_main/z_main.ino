@@ -29,8 +29,19 @@ void loop()
   Serial.print((char)inByte);  
   // get rid of that previous char
   inByte = (char)Serial.read();
+  goodDelay();
+  inByte = (char)Serial.read();
+  if(inByte == 'S') {
+   Serial.print('W');
+  }
+ goodDelay();
+ inByte = (char)Serial.read();
+  if(inByte == 'I') {
+   Serial.print('P');
+  }
+ 
   delay(.1);
-  // send d Command
+  // send T Command
   Serial.print('T');
   // get rid of that previous char
   inByte = (char)Serial.read();
