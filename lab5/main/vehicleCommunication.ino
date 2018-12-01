@@ -44,7 +44,33 @@ while (Serial1.available()) {
    // print response
    Serial.print("RECIEVED A ->>>  ");
    Serial.println(*vd->response);
-
+    
+  // Sends start image
+  Serial1.print("S");
+  // Get rid of char
+  Serial1.read();
+  // Wait for W
+  goodDelay();
+  inByte = (char)Serial1.read();
+  insert(&front, &back, m);
+  (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+  deleteNode(&front, &back, currentLength - 1);
+  // Wait for Image Complete
+  Serial.print("Should recieve an W -> ");
+  Serial.println(inByte);
+  
+  // Send I
+  Serial1.print("I");
+  
+  
+  // Send I Command
+  Serial1.print();
+  goodDelay();
+  inByte = (char)Serial1.read();
+   // Wait for P command
+   Serial.print("Should receive a P -> ");
+   Serial.println(inByte);
+  
    Serial.println("Waiting for T command... ");
     // Should be waiting for a T
     goodDelay();
