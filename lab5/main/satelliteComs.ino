@@ -18,7 +18,9 @@ void satelliteComs(void* s) {
   satelliteComsData* satelliteComs = (satelliteComsData*) s;
   
   // Send earth command to command task
-  commandTaskData->earthCommand = s->earthCommand;
+  commandTaskData.earthCommand = s->earthCommand;
+  // Send response
+  earthCommand.response = commandTaskData.response;
   if (satelliteComs->earthCommand = 'T') {
   // initialize the thruster direction commands
   unsigned short left = 0;
