@@ -3,6 +3,14 @@
 typedef struct commandTaskData {
  char* validTasks;
  char task;
+ unsigned  short *batteryLevel;
+ float *fuelLevel;
+ unsigned short *powerConsumption;
+ bool *fuelLow;
+ bool *batteryLow;
+ bool *solarPanelState;
+ float *transportDist;
+ unsigned int* imageData;
 } commandTaskData;
 
 void commandTask(void* c);
@@ -34,15 +42,36 @@ void commandTask(void* c) {
   if (!validCommand) {
   }
   if (ctd->task == 'S') {
+   runTasks = true;
   }
-  else if (ctd->task == 'P') {
+ else {
+ runTasks = false;
+ }
+ if (ctd->task == 'P') {
+   stopTasks = true;
   }
-  else if(ctd->task == 'D') {
+ else {
+   stopTasks = false;
+ }
+  if(ctd->task == 'D') {
+   displayOff = true;
   }
-  else if(ctd->task == 'T') {
+  else {
+   displayOff = false;
   }
-  else if(ctd->task == 'M') {
-  }
+ 
+  // It will format any requested data to be sent by the Satellite Comms task over the
+  // network to the remote system. 
+  /*unsigned  short *batteryLevel;
+  float *fuelLevel;
+  unsigned short *powerConsumption;
+  bool *fuelLow;
+  bool *batteryLow;
+  bool *solarPanelState;
+  float *transportDist;
+  unsigned int* imageData;*/
+ 
+}
 /*
 Transmit
 When a message is to be transmitted, the Command task must build the message
