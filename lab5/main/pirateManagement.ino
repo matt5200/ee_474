@@ -3,7 +3,7 @@ typedef struct pirateManagementData {
   int*alienDist;
 } pirateManagementData;
 
-bool detected;
+
 
 void pirateManagement(void* p);
 

@@ -1,31 +1,5 @@
-bool solarPanelState;
-unsigned short batteryLevel;
-unsigned short powerConsumption;
-unsigned short powerGeneration;
-bool fuelLow;
-bool batteryLow;
-float fuelLevel;
-unsigned int thrusterCommand;
-unsigned int batteryLevelPtr;
-bool solarPanelDeploy;
-bool solarPanelRetract;
-bool driveMotorSpeedDec ;
-bool driveMotorSpeedInc; 
-char response;
-char command;
-int currCommand;
-long globalCount;
-bool batteryOverTemperature; 
-unsigned short batteryTemperature;
-unsigned short batteryTemperature2;
-bool batteryIsValid;
-bool travelFlag;
-bool stable;
-float transportDist;
-
-
 powerSubsystemData psd;
-satelliteComsData sd;
+
 thrusterSubsystemData td;
 consoleDisplayData cd;
 warningAlarmData wd;
@@ -33,24 +7,29 @@ solarPanelControlData spd;
 consoleKeypadData  ckd;
 vehicleCommsData vcd;
 transportDistanceData tpd;
+pirateDetectionData pd;
+pirateManagementData pmd;
 
-TCB a;
-TCB b;
-TCB c;
-TCB d;
-TCB e;
-// Solar Panel Control
-TCB f;
-// Console Key Pad
-TCB h;
-// battery Temp
-TCB l;
-TCB m;
 
 
 char arrCommands [7] = {'F','B','L','R','D','H'};
 
 void setup() {
+
+
+  batteryLevel1= 0;
+  fuelLevel1= 0;
+  powerConsumption1= 0;
+  fuelLow1= 0;
+  batteryLow1= 0;
+  solarPanelState1= false;
+  transportDist1= 0;
+  imageData1= 0;
+  earthCommand1= 0;
+  satResponse1= 0;
+  imageData = 0;
+
+  detected = false;
   placeTime2 = 0;
   ack = false;
   timer = 0;
@@ -61,6 +40,7 @@ void setup() {
   placeDist= 0;
   placeholder= 7;  // initialize to 7 in main
   distanceDone= true;
+
   // Begin communication between board and computer
   Serial.begin(9600);
   pinMode(25, OUTPUT);
@@ -76,7 +56,7 @@ void setup() {
   fuel_flash_two = true;
   endOfTravel = false;
   stable = true;
-// Begin communication between board and computer
+  // Begin communication between board and computer
   Serial1.begin(9600);
   // Set booleans for battery and fuel flash to true
   batt_flash = true;
@@ -84,14 +64,14 @@ void setup() {
   fuel_flash_two = true;
   placeTemp = 0;
 
-  // The following code is for the TFT display
+  // The following code is for the tft display
   #ifdef USE_Elegoo_SHIELD_PINOUT
-  Serial.println(F("Using Elegoo 2.4\" TFT Arduino Shield Pinout"));
+  Serial.println(F("Using Elegoo 2.4\" tft Arduino Shield Pinout"));
   #else
-  Serial.println(F("Using Elegoo 2.4\" TFT Breakout Board Pinout"));
+  Serial.println(F("Using Elegoo 2.4\" tft Breakout Board Pinout"));
   #endif
 
-  Serial.print("TFT size is "); Serial.print(tft.width()); Serial.print("x"); Serial.println(tft.height());
+  Serial.print("tft size is "); Serial.print(tft.width()); Serial.print("x"); Serial.println(tft.height());
 
   tft.reset();
 
@@ -121,9 +101,9 @@ void setup() {
   else {
     Serial.print(F("Unknown LCD driver chip: "));
     Serial.println(identifier, HEX);
-    Serial.println(F("If using the Elegoo 2.8\" TFT Arduino shield, the line:"));
+    Serial.println(F("If using the Elegoo 2.8\" tft Arduino shield, the line:"));
     Serial.println(F("  #define USE_Elegoo_SHIELD_PINOUT"));
-    Serial.println(F("should appear in the library header (Elegoo_TFT.h)."));
+    Serial.println(F("should appear in the library header (Elegoo_tft.h)."));
     Serial.println(F("If using the breakout board, it should NOT be #defined!"));
     Serial.println(F("Also if using the breakout, double-check that all wiring"));
     Serial.println(F("matches the tutorial."));
@@ -158,6 +138,16 @@ void setup() {
   batteryTemperature= 0;
   batteryTemperature2= 0;
   command = arrCommands[currCommand];
+  alienDist = 500;
+  earthCommand = 0;
+  earthCommand1 = 0;
+  satResponse1 = 0;
+  satResponse = 0;
+  
+  // Set pointers for pirate management
+  pd.alienDist = &alienDist;
+  pmd.alienDist = &alienDist;
+    
   // Set the struct pointers for the power subsystem
   psd.solarPanelState = &solarPanelState;
   psd.batteryLevel = &batteryLevel;
@@ -167,7 +157,8 @@ void setup() {
   psd.batteryOverTemperature= &batteryOverTemperature; 
   psd.batteryTemperature= &batteryTemperature;
   psd.batteryTemperature2= &batteryTemperature2;
-  
+
+
   // Set the struct pointers for the satellite comms
   sd.fuelLow = &fuelLow;
   sd.batteryLow = &batteryLow;
@@ -177,6 +168,25 @@ void setup() {
   sd.powerConsumption = &powerConsumption;
   sd.powerGeneration = &powerGeneration;
   sd.thrusterCommand = &thrusterCommand;
+  sd.transportDist  = &transportDist;
+  sd.earthCommand = &earthCommand;
+  sd.satResponse = &satResponse;
+
+
+
+  // Set the struct pointers for the task command
+  cnd.earthCommand = &earthCommand;
+  cnd.satResponse = &satResponse;
+  cnd.fuelLow = &fuelLow;
+  cnd.batteryLow = &batteryLow;
+  cnd.solarPanelState = &solarPanelState;
+  cnd.batteryLevel = &batteryLevel;
+  cnd.batteryTemperature = &batteryTemperature;
+  cnd.fuelLevel = &fuelLevel;
+  cnd.powerConsumption = &powerConsumption;
+  cnd.powerGeneration = &powerGeneration;
+  cnd.imageData = &imageData;
+  cnd.transportDist  = &transportDist;
 
   // Set the struct pointers for the thruster system
   td.fuelLevel = &fuelLevel;
@@ -191,7 +201,32 @@ void setup() {
   wd.fuelLow = &batteryLow; 
   wd.batteryLevel = &batteryLevel;
   wd.batteryOverTemperature = &batteryOverTemperature;
- 
+
+  // Remote Data Computer
+  rd.batteryLevel= &batteryLevel;
+  rd.fuelLevel= &fuelLevel;
+  rd.powerConsumption= &powerConsumption;
+  rd.fuelLow = &fuelLow;
+  rd.batteryLow= &batteryLow;
+  rd.solarPanelState= &solarPanelState;
+  rd.transportDist= &transportDist;
+  rd.imageData= &imageData;
+
+
+  // earth data
+  ed.batteryLevel1= &batteryLevel1;
+  ed.fuelLevel1= &fuelLevel1;
+  ed.powerConsumption1= &powerConsumption1 ;
+  ed.fuelLow1= &fuelLow1;
+  ed.batteryLow1= &batteryLow1;
+  ed.solarPanelState1= &solarPanelState1;
+  ed.transportDist1 = &transportDist1 ;
+  ed.imageData1= &imageData1;
+  ed.earthCommand1= &earthCommand1;
+  ed.satResponse1= &satResponse1;
+  ed.imageData1= &imageData1;
+   
+  
   // Set the struct pointers for the console display data.
   cd.fuelLow = &fuelLow;
   cd.batteryLow = &batteryLow;
@@ -240,8 +275,12 @@ void setup() {
   l.taskDataPtr = &psd;
   l.myTask = &batteryTemp;
   void* in;
-  m.myTask = imageCapture;
+  m.myTask = &imageCapture;
   m.taskDataPtr = in;
+  n.myTask = &pirateDetection;
+  n.taskDataPtr = &pd;
+  o.myTask = &pirateManagement;
+  o.taskDataPtr = &pmd;
   
   Serial.println("STARTUP PROCEDURE RUNNING");
   Serial.println("ALL SYSTEM TASKS SHALL BE RUN...");
@@ -256,6 +295,8 @@ void setup() {
    (f.myTask)(f.taskDataPtr);
    //(g.myTask)(g.taskDataPtr);
    //(h.myTask)(h.taskDataPtr);
+   (n.myTask)(n.taskDataPtr);
+   (o.myTask)(o.taskDataPtr);
 
    insert(&front, &back, &b); 
    insert(&front, &back, &c);
@@ -329,6 +370,5 @@ void loop() {
     batteryOverTemperature = false;
     ack = false;
   }
- // deleteNode(&front, &back, currentLength - 1);
   cycle++;
   }

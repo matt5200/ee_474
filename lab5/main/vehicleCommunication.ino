@@ -11,16 +11,7 @@ typedef struct vehicleCommsData {
 } vehicleCommsData;
 
 void vehicleCommunicate(void* t );
-void goodDelay();
 
-void goodDelay() {
- while (!Serial1.available()) {
- }
-  if((int) Serial1.peek() < 64) {
-  Serial1.read();
-   goodDelay();
- }
-}
 
 void vehicleCommunicate(void* t ) {
 
@@ -52,7 +43,7 @@ while (Serial1.available()) {
   // Wait for W
   goodDelay();
   inByte = (char)Serial1.read();
-  insert(&front, &back, m);
+  insert(&front, &back, &m);
   (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
   deleteNode(&front, &back, currentLength - 1);
   // Wait for Image Complete
@@ -64,7 +55,7 @@ while (Serial1.available()) {
   
   
   // Send I Command
-  Serial1.print();
+  Serial1.read();
   goodDelay();
   inByte = (char)Serial1.read();
    // Wait for P command

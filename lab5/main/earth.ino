@@ -1,45 +1,60 @@
 
-
 // Struct containing all data relevant to warning alarm system
 typedef struct earthData { 
-  unsigned  short *batteryLevel;
-  float *fuelLevel;
-  unsigned short *powerConsumption;
-  bool *fuelLow;
-  bool *batteryLow;
-  bool *solarPanelState;
-  float *transportDist;
-  unsigned int* imageData;
-  char earthCommand;
-  char satResponse;
+  unsigned  short* batteryLevel1;
+  
+  float* fuelLevel1;
+  unsigned short* powerConsumption1;
+  unsigned short* powerGeneration1;
+  unsigned short* batteryTemp1;
+  bool* fuelLow1;
+  bool* batteryLow1;
+  bool* solarPanelState1;
+  float* transportDist1;
+  char* earthCommand1;
+  char* satResponse1;
+  int* imageData1;
 } earthData;
 
-void earth(void* r) {
-  earthData*  = (earthData*) d;
+
+earthData ed;
+
+void goodDelay() {
+ while (!Serial1.available()) {
+ }
+  if((int) Serial1.peek() < 64) {
+  Serial1.read();
+   goodDelay();
+ }
+}
+void earth(void* d) {
+
+  earthData* EarthData = (earthData*) d;
   Serial.println("What is earth command??");
-  while(Serial.availible() > 0) {
+
+  while(Serial.available() > 0) {
      Serial.read();
   }
   goodDelay();
   command = Serial.read();
   Serial.print("Fuel Low: ");
-  Serial.println(rdc->fuelLow);
+  Serial.println(*EarthData->fuelLow1);
   Serial.print("Battery Low :");
-  Serial.print(rdc->batteryLow);
+  Serial.println(*EarthData->batteryLow1);
   Serial.print("Solar Panel State :");
-  Serial.print(rdc->solarPanelState);
-  Serial.print();
-  Serial.print(rdc->fuelLevel);
-  Serial.print();
-  Serial.print(rdc->powerConsumption);
-  Serial.print();
-  Serial.print(rdc->powerGeneration);
-  Serial.print();
-  Serial.print(rdc->batteryLevel);
-  Serial.print();
-  Serial.print(rdc->batteryTemp);
-  Serial.print();
-  Serial.print(rdc->transportDistance);
-  Serial.print();
-  Serial.print(rdc->imageData);
+  Serial.println(*EarthData->solarPanelState1);
+  Serial.print("Fuel Level");
+  Serial.println(*EarthData->fuelLevel1);
+  Serial.print("Power Consumption");
+  Serial.println(*EarthData->powerConsumption1);
+  Serial.print("Power Generation");
+  Serial.println(*EarthData->powerGeneration1);
+  Serial.print("Battery Level");
+  Serial.println(*EarthData->batteryLevel1);
+  Serial.print("Battery Temp");
+  Serial.println(*EarthData->batteryTemp1);
+  Serial.print("Transport Distance");
+  Serial.println(*EarthData->transportDist1);
+  Serial.print("Image Data");
+  Serial.println(*EarthData->imageData1);
 }

@@ -1,6 +1,25 @@
+
+typedef struct commandData {
+ char* earthCommand;
+ char* satResponse;
+ unsigned  short *batteryLevel;
+ float *fuelLevel;
+ unsigned short *powerConsumption;
+ unsigned short *powerGeneration;
+ unsigned short * batteryTemperature;
+ bool *fuelLow;
+ bool *batteryLow;
+ bool *solarPanelState;
+ float *transportDist;
+ int* imageData;
+} commandData;
+
+commandData cnd;
+
 // Struct containing all data for the satellite data
 typedef struct satelliteComsData {
-  char earthCommand;
+  float *transportDist;
+  char* earthCommand;
   bool* fuelLow;
   bool* batteryLow;
   bool* solarPanelState;
@@ -9,19 +28,35 @@ typedef struct satelliteComsData {
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
   unsigned int* thrusterCommand;
+  char* satResponse;
 } satelliteComsData;
-
+satelliteComsData sd;
 void satelliteComs(void* s);
 
 void satelliteComs(void* s) {
   Serial.println("FUNCTION 3");
   satelliteComsData* satelliteComs = (satelliteComsData*) s;
+
+  *satelliteComs->earthCommand = *ed.earthCommand1;
   
   // Send earth command to command task
-  commandTaskData.earthCommand = s->earthCommand;
+  *cnd.earthCommand = *satelliteComs->earthCommand;
+
   // Send response
-  earthCommand.response = commandTaskData.response;
-  if (satelliteComs->earthCommand = 'T') {
+  *ed.satResponse1 = *cnd.satResponse;
+  
+ if (*cnd.earthCommand == 'M') {
+  *ed.batteryLevel1 = *satelliteComs->batteryLevel;
+  *ed.fuelLow1 = *satelliteComs->fuelLow;
+  *ed.powerConsumption1 = *satelliteComs->powerConsumption;
+  *ed.batteryLow1 = *satelliteComs->batteryLow;
+  *ed.solarPanelState1 = *satelliteComs->solarPanelState;
+  *ed.transportDist1 = *satelliteComs->transportDist;
+  *ed.imageData1 = freqBuffer[placeTime2];
+  *cnd.satResponse = 'M';
+ }
+  
+  if (*satelliteComs->earthCommand = 'T') {
   // initialize the thruster direction commands
   unsigned short left = 0;
   unsigned short right = 0;

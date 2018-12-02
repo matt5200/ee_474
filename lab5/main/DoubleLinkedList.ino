@@ -9,6 +9,30 @@ typedef struct TCB {
   void* taskDataPtr;
 } TCB; 
 
+
+TCB a;
+TCB b;
+TCB c;
+TCB d;
+TCB e;
+// Solar Panel Control
+TCB f;
+// Console Key Pad
+TCB h;
+// Battery Temp
+TCB l;
+TCB m;
+// Pirate Detection
+TCB n;
+// Pirate Management
+TCB o;
+// Command Task
+TCB p;
+// Earth Task
+TCB q;
+
+
+
 // Define NodeTCB, holds TCB,
 // next and prev node pointers
 typedef struct NodeTCB {

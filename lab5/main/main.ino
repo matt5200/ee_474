@@ -1,5 +1,46 @@
 
-#include <TFT.h>
+
+bool solarPanelState;
+unsigned short batteryLevel;
+unsigned short powerConsumption;
+unsigned short powerGeneration;
+bool fuelLow;
+bool batteryLow;
+float fuelLevel;
+unsigned int thrusterCommand;
+unsigned int batteryLevelPtr;
+bool solarPanelDeploy;
+bool solarPanelRetract;
+bool driveMotorSpeedDec ;
+bool driveMotorSpeedInc; 
+char response;
+char command;
+int currCommand;
+long globalCount;
+bool batteryOverTemperature; 
+unsigned short batteryTemperature;
+unsigned short batteryTemperature2;
+bool batteryIsValid;
+bool travelFlag;
+bool stable;
+float transportDist;
+int alienDist;
+int imageData;
+char satResponse;
+char earthCommand;
+
+unsigned  short batteryLevel1;
+float fuelLevel1;
+unsigned short powerConsumption1;
+bool fuelLow1;
+bool batteryLow1;
+bool solarPanelState1;
+float transportDist1;
+int imageData1;
+char earthCommand1;
+char satResponse1;
+
+
 
 // The following declerations are neccessary for the tft board to function
 // The code was also provided by the Elegoo company, https://www.elegoo.com/

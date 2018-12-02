@@ -1,19 +1,21 @@
 
 // Struct containing all data relevant to warning alarm system
-typedef struct void remoteData { 
-  unsigned  short *batteryLevel;
-  float *fuelLevel;
-  unsigned short *powerConsumption;
-  bool *fuelLow;
-  bool *batteryLow;
-  bool *solarPanelState;
-  float *transportDist;
-  unsigned int* imageData;
+typedef struct remoteData { 
+  unsigned  short* batteryLevel;
+  float* fuelLevel;
+  unsigned short* powerConsumption;
+  bool* fuelLow;
+  bool* batteryLow;
+  bool* solarPanelState;
+  float* transportDist;
+  int* imageData;
 } remoteData;
 
-void remoteDataComputer(void* r) {
+remoteData rd;
 
-  remoteData* rdc = (warningAlarmData*) d;
+void remoteDataComputer(void* d) {
+
+  remoteData* rdc = ( remoteData* ) d;
   tft.setTextColor(BLUE); 
   tft.setCursor(0, 60);
   tft.print("Remote Data System");

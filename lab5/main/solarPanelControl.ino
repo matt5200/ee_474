@@ -10,7 +10,7 @@ bool motorComplete;
 void solarPanelControl(void* c);
 
 TCB g;
-float rate; 
+float rate;
 
 void solarPanelControl(void* c) {
   Serial.println("FUNCTION 6");
