@@ -3,6 +3,9 @@
 // Play a fun challenging game for 60 seconds
 // then return to work!
 void foodGame() {
+  while(Serial.availible() > 0) {
+    Serial.read();
+  }
   Serial.println("\n***Feel up to a game engineers??\n");
   goodDelay1();
   
@@ -22,10 +25,10 @@ void foodGame() {
   int time = 60.0
   tft.clear();
   int foodEaten = 0;
-    while (time > 60 && foodEatn < 5) {
-    delay();
-    
-    if () {
+  double time = millis();
+  while ( millis() - time < 60 && foodEatn < 5) {
+      
+    if (foodEaten == 5) {
     tft.clear();
     tft.setCursor(30,120);
     tft.print("WINNER WINNER WINNER");
@@ -33,3 +36,6 @@ void foodGame() {
   }
   Serial.println("Okay you had enough fun, now go explore the galaxy!");
 }
+  
+  
+ 
