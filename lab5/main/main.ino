@@ -1,5 +1,4 @@
-
-
+boolean displayOff;
 bool solarPanelState;
 unsigned short batteryLevel;
 unsigned short powerConsumption;
@@ -20,6 +19,7 @@ long globalCount;
 bool batteryOverTemperature; 
 unsigned short batteryTemperature;
 unsigned short batteryTemperature2;
+unsigned short batteryTemp21;
 bool batteryIsValid;
 bool travelFlag;
 bool stable;
@@ -32,6 +32,7 @@ char earthCommand;
 unsigned  short batteryLevel1;
 float fuelLevel1;
 unsigned short powerConsumption1;
+unsigned short powerGeneration1;
 bool fuelLow1;
 bool batteryLow1;
 bool solarPanelState1;
@@ -39,20 +40,44 @@ float transportDist1;
 int imageData1;
 char earthCommand1;
 char satResponse1;
+unsigned short batteryTemp1;
 
-
-
-// The following declerations are neccessary for the tft board to function
-// The code was also provided by the Elegoo company, https://www.elegoo.com/
-#include <TFT.h>
-#include <SPI.h>
 #include <Elegoo_GFX.h>    // Core graphics library
 #include <Elegoo_TFTLCD.h> // Hardware-specific library
+#include <TFT.h>
+#include <SD.h>
+#include <SPI.h>
+
+// The control pins for the LCD can be assigned to any digital or
+// analog pins...but we'll use the analog pins as this allows us to
+// double up the pins with the touch screen (see the TFT paint example).
 #define LCD_CS A3 // Chip Select goes to Analog 3
 #define LCD_CD A2 // Command/Data goes to Analog 2
 #define LCD_WR A1 // LCD Write goes to Analog 1
 #define LCD_RD A0 // LCD Read goes to Analog 0
-#define LCD_RESET A4 // Can alternately just connect to Arduino's reset pin
+
+// When using the BREAKOUT BOARD only, use these 8 data lines to the LCD:
+// For the Arduino Uno, Duemilanove, Diecimila, etc.:
+//   D0 connects to digital pin 8  (Notice these are
+//   D1 connects to digital pin 9   NOT in order!)
+//   D2 connects to digital pin 2
+//   D3 connects to digital pin 3
+//   D4 connects to digital pin 4
+//   D5 connects to digital pin 5
+//   D6 connects to digital pin 6
+//   D7 connects to digital pin 7
+// For the Arduino Mega, use digital pins 22 through 29
+// (on the 2-row header at the end of the board).
+
+// For Arduino Uno/Duemilanove, etc
+//  connect the SD card with DI going to pin 11, DO going to pin 12 and SCK going to pin 13 (standard)
+//  Then pin 10 goes to CS (or whatever you have set up)
+#define SD_CS 10     // Set the chip select line to whatever you use (10 doesnt conflict with the library)
+
+// In the SD card, place 24 bit color BMP files (be sure they are 24-bit!)
+// There are examples in the sketch folder
+
+
 #define  BLACK   0x0000
 #define BLUE    0x001F
 #define RED     0xF800
@@ -62,8 +87,9 @@ char satResponse1;
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 #define ORANGE  0xFFA5
-// Initialize tft display
-Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+
+// our TFT wiring
+Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, A4);
 
 // Struct containing all data relevant to console displau
 typedef struct consoleDisplayData{ 
@@ -112,7 +138,8 @@ void ClearLine(int y_coord) {
 
  //Warning alarm function
 void WarningAlarm (void* d) {
-  Serial.println("FUNCTION 5");
+  Serial.println("\n***Warning Alarm***");
+if (!displayOff) {
 for (int i = 0; i < 50; i++) {
   delay(100);
   warningAlarmData* data = (warningAlarmData*) d;
@@ -168,15 +195,18 @@ for (int i = 0; i < 50; i++) {
    flashing = false;
   }
  }
-   
+
+
     tft.setCursor(0, 15);
   //  Following is logic for determing fuel print state
    if ( *data->fuelLevel > 50) {
+    *data->fuelLow = false;
     timer = 0;
     tft.setTextColor(GREEN); 
     tft.print("FUEL");
     }
    else if ( *data->fuelLevel <= 50 && *data->fuelLevel > 10) {
+    *data->fuelLow = false;
     if(timer % 20 == 0 ) {
       if (batt_flash) {
         tft.setTextColor(BLACK);
@@ -193,6 +223,7 @@ for (int i = 0; i < 50; i++) {
     timer++;
    }
    else {
+    *data->fuelLow = true;
       if(timer % 20 == 0 ) {
       if (batt_flash) {
         tft.setTextColor(BLACK);
@@ -213,11 +244,13 @@ for (int i = 0; i < 50; i++) {
    tft.setCursor(0, 30);
   //  Following is logic for determing fuel print state
    if ( *data->batteryLevel > 50) {
+    *data->batteryLow =false;
     timer2 = 0;
     tft.setTextColor(GREEN); 
     tft.print("BATTERY");
     }
    else if ( *data->batteryLevel <= 50 && *data->batteryLevel > 10) {
+    *data->batteryLow = false;
     if(timer2 % 10 == 0 ) {
       if (batt_flash_two) {
         tft.setTextColor(BLACK); 
@@ -234,6 +267,7 @@ for (int i = 0; i < 50; i++) {
    timer2++;
    }
    else {
+    *data->batteryLow = true;
       if(timer2 % 10 == 0 ) {
       if (batt_flash_two) {
          tft.setTextColor(BLACK); 
@@ -246,11 +280,11 @@ for (int i = 0; i < 50; i++) {
       tft.print("BATTERY\n");
       batt_flash_two = true;
     }
-   }
+      }
    timer2++;
-   }
-
-}
+      }
+    }
+  }
 }
 
 void ConsoleDisplay( void* cdd) {

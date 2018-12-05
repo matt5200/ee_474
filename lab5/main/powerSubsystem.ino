@@ -25,7 +25,7 @@ int placeTemp; // newwwwwwwwwwwww
 void powerSubsystem(void* p);
 
 void powerSubsystem(void* p) {
-  Serial.println("FUNCTION 1");
+  Serial.println("\n***PowerSubystem***");
   powerSubsystemData* power = (powerSubsystemData*) p;
 
     // put pinMode(A13, OUTPUT)
@@ -45,7 +45,6 @@ void powerSubsystem(void* p) {
   Serial.println("PLACE");
   Serial.println(place);
 
-  // batteryTemperature ISSSS NOOOOOOOOOOOTTTTTTTTTT DDDDDDOOOOOONNNNNNNNNEEEEEE
   if (*power->solarPanelState == true) {
     delayMicroseconds(600);
     float temp = analogRead(A14);

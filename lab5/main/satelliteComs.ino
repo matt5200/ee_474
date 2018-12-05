@@ -1,4 +1,5 @@
 
+
 typedef struct commandData {
  char* earthCommand;
  char* satResponse;
@@ -16,7 +17,7 @@ typedef struct commandData {
 
 commandData cnd;
 
-// Struct containing all data for the satellite data
+// Struct containing all data for the satellite data 
 typedef struct satelliteComsData {
   float *transportDist;
   char* earthCommand;
@@ -28,31 +29,52 @@ typedef struct satelliteComsData {
   unsigned short* powerConsumption;
   unsigned short* powerGeneration;
   unsigned int* thrusterCommand;
+  unsigned short* batteryTemperature2;
   char* satResponse;
+  int * imageData;
+  unsigned short* batteryTemperature;
 } satelliteComsData;
 satelliteComsData sd;
+
 void satelliteComs(void* s);
 
 void satelliteComs(void* s) {
-  Serial.println("FUNCTION 3");
+  Serial.println("\n***Satellite Comms Running***");
   satelliteComsData* satelliteComs = (satelliteComsData*) s;
 
+  // Recieve earth command
   *satelliteComs->earthCommand = *ed.earthCommand1;
   
   // Send earth command to command task
   *cnd.earthCommand = *satelliteComs->earthCommand;
 
+
+  // Add command task
+  insert(&front, &back, &p);
+  // Run command task
+  (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+  // Remove command task
+  deleteNode(&front, &back, currentLength - 1);
+  
   // Send response
-  *ed.satResponse1 = *cnd.satResponse;
+  *ed.satResponse1 = *satelliteComs->satResponse;
+  Serial.print("Earth Command  = ");
+  Serial.println(*satelliteComs->earthCommand);
+  Serial.print("Satellite Response  = ");
+  Serial.println(*ed.satResponse1 );
   
  if (*cnd.earthCommand == 'M') {
   *ed.batteryLevel1 = *satelliteComs->batteryLevel;
   *ed.fuelLow1 = *satelliteComs->fuelLow;
+  *ed.fuelLevel1 = *satelliteComs->fuelLevel;
   *ed.powerConsumption1 = *satelliteComs->powerConsumption;
+  *ed.powerGeneration1 = *satelliteComs->powerGeneration;
   *ed.batteryLow1 = *satelliteComs->batteryLow;
   *ed.solarPanelState1 = *satelliteComs->solarPanelState;
   *ed.transportDist1 = *satelliteComs->transportDist;
-  *ed.imageData1 = freqBuffer[placeTime2];
+  *ed.imageData1 = *satelliteComs->imageData;
+  *ed.batteryTemp1 = *satelliteComs->batteryTemperature;
+  *ed.batteryTemp21 = *satelliteComs->batteryTemperature2;
   *cnd.satResponse = 'M';
  }
   

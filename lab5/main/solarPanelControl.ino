@@ -13,7 +13,7 @@ TCB g;
 float rate;
 
 void solarPanelControl(void* c) {
-  Serial.println("FUNCTION 6");
+  Serial.println("\n***Solar Panel Control***");
   solarPanelControlData* solarPanelControl = (solarPanelControlData*) c;
   unsigned short motorDrive = 0;
   unsigned short range = 0;

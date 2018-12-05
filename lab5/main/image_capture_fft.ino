@@ -7,7 +7,16 @@ int freq [16];
 int placeTime2;
 int freqBuffer[256];
 
+typedef struct imageCaptureData {
+  int* imageData;
+} imageCaptureData;
+
+imageCaptureData im;
+void imageCapture(void* in);
+
 void imageCapture(void* in) {
+  imageCaptureData* data = (imageCaptureData*) in;
+    Serial.println("\n***Running Image Capture***");
     signed int a [256];
     signed int b [256];
 
@@ -30,6 +39,9 @@ void imageCapture(void* in) {
     Serial.println(d);
     double freq;
     freq = 5000*(d/256.0);
+    *data->imageData = (int) freq;
+    Serial.print("Stored image data");
+    Serial.println(*data->imageData);
     Serial.print("\n\n Freq WAS ");
     Serial.println(freq);
    if (placeTime2 == 7) {
@@ -38,6 +50,6 @@ void imageCapture(void* in) {
         placeTime2++;
       }
   freqBuffer[placeTime2] = freq;
-  Serial.print("Frequency at  the last index was !!!");
+  Serial.print("Frequency at  the last index was ");
   Serial.println(freqBuffer[placeTime2]);
 }

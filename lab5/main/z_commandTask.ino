@@ -1,11 +1,9 @@
 
 
 
-boolean displayOff;
 boolean stopTasks;
 
 // Command earthCommand
-
 
 
 void commandTask(void* c);
@@ -17,9 +15,8 @@ remote computer.
 */
 
 void commandTask(void* c) {
-  Serial.println("FUNCTION Command earthCommand");
+  Serial.println("Running Command Task");
   commandData* ctd = (commandData*) c;
-  bool validCommand = false;
   
  /*
     Receive
@@ -27,9 +24,12 @@ void commandTask(void* c) {
     received message is valid. If valid, it is acted upon;
   */
 
- if (*ctd->earthCommand == 'S' || *ctd->earthCommand == 'P' || *ctd->earthCommand == 'D' || *ctd->earthCommand == 'M' || *ctd->earthCommand == 'T' || *ctd->earthCommand == 'A') {
-          validCommand = true;
+ if (*ctd->earthCommand == 'S' || *ctd->earthCommand == 'P' || *ctd->earthCommand == 'D' || *ctd->earthCommand == 'M' || *ctd->earthCommand == 'T') {
+          *ctd->satResponse = 'A';
         }
+  else {
+          *ctd->satResponse = 'E';
+  }
     
  
 /*
@@ -40,21 +40,11 @@ After the message has been interpreted and verified as correct or an outgoing me
 been built and forwarded to the SatelliteComms earthCommand, the Command earthCommand shall be deleted
 */
  
- // if invalid, an error response must be sent to the SatelliteComms earthCommand.
- if (!validCommand) {
-   *ctd->satResponse = 'E';
- }
- else {
-  *ctd->satResponse = 'A';
- }
 
   if (*ctd->earthCommand == 'S') {
+    Serial.println("Sure i'm running all start up tasks");
    (a.myTask)(a.taskDataPtr);
    (b.myTask)(b.taskDataPtr);
-   //(c.myTask)(c.taskDataPtr);
-   (d.myTask)(d.taskDataPtr);
-   (e.myTask)(e.taskDataPtr);
-   (f.myTask)(f.taskDataPtr);
   }
   
  if (*ctd->earthCommand == 'P') {
@@ -66,13 +56,17 @@ been built and forwarded to the SatelliteComms earthCommand, the Command earthCo
   
  // Remove all information from tft display
  if(*ctd->earthCommand == 'D') {
-   displayOff = true;
-   tft.fillScreen(BLACK);
+   if (displayOff) {
+    displayOff = false;
+   }
+   else {
+    displayOff = true;
+    tft.fillScreen(BLACK);
+   }
   }
-  else {
-   displayOff = false;
-  }
-
+  
+ if (*ctd->earthCommand == 'M') {
+  *ctd->satResponse= 'M'; 
+ }
   *sd.satResponse = *ctd->satResponse;
-
 }

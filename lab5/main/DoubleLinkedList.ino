@@ -10,6 +10,7 @@ typedef struct TCB {
 } TCB; 
 
 
+
 TCB a;
 TCB b;
 TCB c;
@@ -30,7 +31,8 @@ TCB o;
 TCB p;
 // Earth Task
 TCB q;
-
+// Remote  Data Computer
+TCB r;
 
 
 // Define NodeTCB, holds TCB,
@@ -78,8 +80,8 @@ NodeTCB* getNode(NodeTCB** front,NodeTCB** back,int index);
             free((*back)->next);
         }
         else {
-           free(*back);
-           free(*front);
+           *back = NULL;
+           *front = NULL;
         }
         currentLength--;
         return *last->func;
@@ -122,4 +124,7 @@ NodeTCB* getNode(NodeTCB** front,NodeTCB** back,int index);
             delay(1000);
             return result;
         }
+        
+NodeTCB* front = NULL; 
+NodeTCB* back = NULL;
     

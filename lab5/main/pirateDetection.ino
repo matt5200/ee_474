@@ -8,6 +8,7 @@ bool detected;
 void pirateDetection(void* p);
 
 void pirateDetection(void* p) {
+  Serial.println("\n**** Pirate Detection ***");
   pirateDetectionData* pirateDetection = (pirateDetectionData*) p;
 
   // generate distance
@@ -20,10 +21,19 @@ void pirateDetection(void* p) {
   }
 
   *pirateDetection->alienDist = dist;
-  
   if (dist <= 100) {
     detected = true;
   } else {
     detected = false;
+  }
+  Serial.println("Pirate Detection Running Arg");
+  Serial.println("Dist");
+  Serial.println(dist);
+  Serial.println("Detected");
+  Serial.println(detected);
+  if (detected) {
+   insert(&front, &back, &o);
+   (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+   deleteNode(&front, &back, currentLength - 1);
   }
 }

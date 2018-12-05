@@ -32,12 +32,9 @@ void commandTask(void* c) {
     When a command has been received by the system, the task must verify that the
     received message is valid. If valid, it is acted upon;
   */
-      for (int i = 0; i < ctd.validTasks.length; i++) {
         if (ctd->task == "S" || ctd->task == "P" || ctd->task == "D" || ctd->task == "M" || ctd->task == "T" || ctd->task == "A") {
           validCommand = true;
         }
-      }
- 
  
 /*
 Transmit

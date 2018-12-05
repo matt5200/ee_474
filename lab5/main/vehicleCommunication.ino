@@ -1,5 +1,4 @@
-NodeTCB* front = NULL; 
-NodeTCB* back = NULL;
+
 
 // transport distance
 TCB k;
@@ -20,7 +19,7 @@ while (Serial1.available()) {
     inByte = (char)Serial1.read();
   }
   
-   Serial.println("FUNCTION 7");
+   Serial.println("\n***Vehicle Communications***");
    vehicleCommsData* vd = (vehicleCommsData*) t;
    Serial.print("Printed command was ->>> ");
    Serial.println(*vd->command);
@@ -35,25 +34,27 @@ while (Serial1.available()) {
    // print response
    Serial.print("RECIEVED A ->>>  ");
    Serial.println(*vd->response);
-    
+
+  Serial.println("Sending an S command, waiting for W");
   // Sends start image
   Serial1.print("S");
   // Get rid of char
   Serial1.read();
   // Wait for W
   goodDelay();
-  inByte = (char)Serial1.read();
+  Serial.println("\n***Running image capture***");
   insert(&front, &back, &m);
   (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
   deleteNode(&front, &back, currentLength - 1);
   // Wait for Image Complete
+  inByte = (char) Serial1.read();
   Serial.print("Should recieve an W -> ");
   Serial.println(inByte);
+  Serial.println("Sending an I, waiting for a P");
   
   // Send I
   Serial1.print("I");
-  
-  
+    
   // Send I Command
   Serial1.read();
   goodDelay();
@@ -86,6 +87,7 @@ while (Serial1.available()) {
     Serial.print("Command received was ->>> ");
     Serial.println(inByte);
 
+   Serial.println("\n***Transport Distance***");
    insert(&front, &back, &k);
    (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
    deleteNode(&front, &back, currentLength - 1);

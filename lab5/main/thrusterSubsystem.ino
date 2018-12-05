@@ -7,7 +7,7 @@ typedef struct thrusterSubsystemData {
 void thrusterSubsystem (void* t);
 
 void thrusterSubsystem (void* t) {
-  Serial.println("FUNCTION 2");
+  Serial.println("\n*** Thruster Subsystem ***");
   thrusterSubsystemData* thrusterSubsystem = (thrusterSubsystemData*) t;
   // convert decimal to binary
   int binary[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
