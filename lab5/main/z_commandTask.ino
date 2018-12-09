@@ -42,12 +42,14 @@ been built and forwarded to the SatelliteComms earthCommand, the Command earthCo
  
 
   if (*ctd->earthCommand == 'S') {
-    Serial.println("Sure i'm running all start up tasks");
+    Serial.println("Running START mode");
    (a.myTask)(a.taskDataPtr);
    (b.myTask)(b.taskDataPtr);
+   Serial.println("Ending START mode");
   }
   
  if (*ctd->earthCommand == 'P') {
+  Serial.println("STOP mode");
    stopTasks = true;
  }
  else {

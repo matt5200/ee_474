@@ -1,11 +1,8 @@
 
-unsigned int* imageDataRawPtr ;
-unsigned int* imageDataPtr;
-int rawData[256];
-int notRawData[256];
-int freq [16];
+// unsigned int* imageDataRawPtr ;
+// unsigned int* imageDataPtr;
 int placeTime2;
-int freqBuffer[256];
+int freqBuffer[8];
 
 typedef struct imageCaptureData {
   int* imageData;
@@ -22,20 +19,15 @@ void imageCapture(void* in) {
 
     for (int i = 0; i < 256; i++) {
         a[i] = analogRead(A11)*.0049*10 - 10;
-        rawData[i] = a[i];
+        // rawData[i] = a[i];
         b[i] = 0;
         delayMicroseconds(100);
     }
     
-    imageDataRawPtr = rawData;
+    // imageDataRawPtr = rawData;
     int d = optfft(a, b);
 
 
-      for (int i = 0; i < 256; i++) {
-        notRawData[i] = a[i];
-    }
-       imageDataPtr = notRawData;
-    
     Serial.println(d);
     double freq;
     freq = 5000*(d/256.0);

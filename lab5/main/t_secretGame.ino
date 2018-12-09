@@ -2,10 +2,10 @@
 #include <SPI.h>
 #define SD_CHIP_SELECT  53  // SD chip select pin(Arduino Mega)
 
-void secretGame();
+void secretGame(void * in);
 // Play a fun challenging game for 60 seconds
 // then return to work!
-void secretGame() {
+void secretGame(void* in) {
   
   while(Serial.available() > 0) {
     Serial.read();
@@ -13,10 +13,11 @@ void secretGame() {
   
   Serial.println("\n***Feel up to a game engineers??\n");
   goodDelay1();
-  
+
   char resp = Serial.read();
   // Look for a yes response
   if (resp == 'y') {
+    tft.fillScreen(BLACK);
   tft.setTextColor(RED);
   tft.setCursor(0,0);
   tft.print("Eat all the food!");
@@ -83,7 +84,7 @@ void secretGame() {
     tft.fillScreen(BLACK);
     tft.setCursor(60,120);
     tft.print("Congrats");
-    delay(400);
+    delay(5000);
     breakbreak = false;
       }
     }

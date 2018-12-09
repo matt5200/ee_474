@@ -20,10 +20,11 @@ void bmpDraw(char *filename, int x, int y);
 
 void selfDestruct(void* s) {
   selfDestructData* selfDestruct = (selfDestructData*) s;
-  Serial.println("Welcome to TrollBot");
+  Serial.println("A wise University of Washington professor was so offended by your design....HES TAKEN IT OVER");
+  delay(2000);
   while (1) {
     int dist  = (int) random(10);
-    Serial.print(dist);
+    Serial.println(dist);
     if (dist < 0) {
       dist = 0;
     }
@@ -34,7 +35,7 @@ void selfDestruct(void* s) {
     if (dist == 0) {
       Serial.println("BEER TIME YOU MUST HAVE");
     } else if (dist == 1) {
-      Serial.println("ASDFGHJKL");
+      Serial.println("rEEjects");
     } else if (dist == 2) {
       Serial.println("AAAAAAAAAAGGGHHHHHHHHHHHH");
     }
@@ -62,6 +63,7 @@ void selfDestruct(void* s) {
     if (dist == 10) {
       Serial.println("BE BOUNDLESS");
     }
+
 
     // TFT Display
     if (dist < 3) {

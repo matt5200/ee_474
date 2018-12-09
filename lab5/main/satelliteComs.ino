@@ -58,9 +58,9 @@ void satelliteComs(void* s) {
   
   // Send response
   *ed.satResponse1 = *satelliteComs->satResponse;
-  Serial.print("Earth Command  = ");
+  Serial.print("Last Earth Command  = ");
   Serial.println(*satelliteComs->earthCommand);
-  Serial.print("Satellite Response  = ");
+  Serial.print("Last Satellite Response  = ");
   Serial.println(*ed.satResponse1 );
   
  if (*cnd.earthCommand == 'M') {

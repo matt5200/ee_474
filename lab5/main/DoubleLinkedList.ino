@@ -33,6 +33,10 @@ TCB p;
 TCB q;
 // Remote  Data Computer
 TCB r;
+// self destruct
+TCB s;
+// t_secret_game
+TCB t;
 
 
 // Define NodeTCB, holds TCB,
@@ -75,9 +79,10 @@ NodeTCB* getNode(NodeTCB** front,NodeTCB** back,int index);
 // Remove node from back of doubley linked list
     TCB removeNode(NodeTCB** front,NodeTCB** back){
         NodeTCB* last = *back;
+        Serial.println("here 5");
         if (currentLength > 1) {
             *back = last->prev;
-            free((*back)->next);
+             free((*back)->next);
         }
         else {
            *back = NULL;
@@ -89,7 +94,6 @@ NodeTCB* getNode(NodeTCB** front,NodeTCB** back,int index);
 
 // Delete node from index of list
    void deleteNode(NodeTCB** front,NodeTCB** back, int index) {
-        
         if (index == currentLength - 1) {
             removeNode(front, back);
             return;

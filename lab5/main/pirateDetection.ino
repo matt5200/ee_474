@@ -29,8 +29,8 @@ void pirateDetection(void* p) {
   Serial.println("Pirate Detection Running Arg");
   Serial.println("Dist");
   Serial.println(dist);
-  Serial.println("Detected");
-  Serial.println(detected);
+  Serial.println("Detected: ");
+  Serial.print(detected);
   if (detected) {
    insert(&front, &back, &o);
    (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);

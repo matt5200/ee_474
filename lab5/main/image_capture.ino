@@ -15,6 +15,8 @@
 #define ABS(x)  (((x)<0)?(-(x)):(x))
 #define CEILING(x) (((x)>511)?511:(x))
 
+
+
 signed int optfft(signed int real[256], signed int imag[256]) {
 
 signed int i, i1, j, l, l1, l2, t1, t2, u;
@@ -604,6 +606,7 @@ const unsigned char square[] = {
     240,    241,    242,    243,    244,    245,    246,    247,
     248,    249,    250,    251,    252,    253,    254,    255
 };
+
 
   /* Bit reversal. */
   /*Do the bit reversal */

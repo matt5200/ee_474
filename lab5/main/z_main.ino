@@ -274,7 +274,7 @@ void setup() {
   vcd.response = &response;
   
   randomSeed(analogRead(0));
-  
+  void* nothing;
   // Initialize all TCBs
   a.myTask = &powerSubsystem;
   a.taskDataPtr = &psd; 
@@ -308,14 +308,17 @@ void setup() {
   q.taskDataPtr = &ed;
   r.myTask = &remoteDataComputer;
   r.taskDataPtr = &rd;
+  void* temp;
+  s.myTask = &selfDestruct;
+  s.taskDataPtr= &temp;
+  t.myTask= &secretGame;
+  t.taskDataPtr= &temp;
   
   Serial.println("STARTUP PROCEDURE RUNNING");
   Serial.println("ALL SYSTEM TASKS SHALL BE RUN...");
   delay(100);
-  //(c.myTask)(c.taskDataPtr);
-  //(r.myTask)(r.taskDataPtr);
 
-/*
+
    // Run All TCBS
    (a.myTask)(a.taskDataPtr);
    (b.myTask)(b.taskDataPtr);
@@ -341,7 +344,7 @@ void setup() {
    //insert(&front, &back, &f);
    insert(&front, &back, &h);
    insert(&front, &back, &a);
-   insert(&front, &back, &n);*/
+   insert(&front, &back, &n);
 
    delay(1000);
    Serial.println("END OF STARTUP...");
@@ -356,10 +359,7 @@ void loop() {
   if (currCommand == 6) {
     currCommand = 0;
   }
-  void* s;
-  //selfDestruct(s);
-  secretGame();
-  /*
+  
   // Function calls
   for (int i = 0; i < currentLength; i++) {
        if (analogRead(A12)*5/1023 > .1) {
@@ -382,6 +382,7 @@ void loop() {
       }
       if (stopTasks) {
         stopTasks = false;
+        Serial.println("Ending STOP mode");
         break;
       }
      insert(&front, &back, &e);
@@ -407,21 +408,21 @@ void loop() {
   if(ack == true) {
     batteryOverTemperature = false;
     ack = false;
-  }*/
-  cycle++;
   }
-
-
-
-
-
-
-
-
-
-
-
-
+  cycle++;
+ Serial.println("\n***Would you like to self destruct?***");
+  while(Serial.available() > 0) {
+     Serial.read();
+  }
+  goodDelay1();
+  if (Serial.read() == 'y') {
+     insert(&front, &back, &s);
+     (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+  }
+  insert(&front, &back, &t);
+ (getN(&front, &back, currentLength - 1)->myTask)(getN(&front, &back, currentLength - 1)->taskDataPtr);
+   deleteNode(&front, &back, currentLength - 1);
+}
 
 
 
